@@ -1185,20 +1185,36 @@ function renderModelView(cropKey, distKey, apiData, mandiLocalName){
   if(apiData && apiData.backtest && apiData.backtest.actual_14d && apiData.backtest.predicted_14d){
     const actual = apiData.backtest.actual_14d;
     const predicted = apiData.backtest.predicted_14d;
+    const q10 = apiData.backtest.predicted_q10_14d || predicted.map(p => p - 35);
+    const q90 = apiData.backtest.predicted_q90_14d || predicted.map(p => p + 35);
     const n = actual.length;
-    const allVals = actual.concat(predicted);
+    const allVals = actual.concat(predicted).concat(q10).concat(q90);
     const minV = Math.min(...allVals), maxV = Math.max(...allVals);
     const rangeV = (maxV-minV)||1;
-    const w=340,h=70,pad=6;
+    const w=340,h=70,pad=8;
     const toXY = (arr,i)=>{
       const x = (i/(n-1))*(w-2*pad)+pad;
       const y = h-pad-((arr[i]-minV)/rangeV)*(h-2*pad);
       return [x,y];
     };
     const pathFor = (arr)=> arr.map((v,i)=>{const [x,y]=toXY(arr,i); return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+    
+    // Shaded 80% Prediction Band Polygon
+    let bandPath = q90.map((v,i)=>{const [x,y]=toXY(q90,i); return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+    for(let i=n-1; i>=0; i--){
+      const [x,y]=toXY(q10,i);
+      bandPath += ` L${x.toFixed(1)},${y.toFixed(1)}`;
+    }
+    bandPath += ' Z';
+
+    // Dots for actual prices
+    let actualDots = actual.map((v,i)=>{const [x,y]=toXY(actual,i); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2" fill="var(--ink-muted)"/>`;}).join('');
+
     document.getElementById('backtestChart').innerHTML = `
-      <path d="${pathFor(actual)}" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="${pathFor(predicted)}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="${bandPath}" fill="var(--teal)" fill-opacity="0.12" stroke="none"></path>
+      <path d="${pathFor(actual)}" fill="none" stroke="var(--ink-muted)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      ${actualDots}
+      <path d="${pathFor(predicted)}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round"></path>
     `;
     
     const mdaPct = apiData.backtest.mda_pct;
