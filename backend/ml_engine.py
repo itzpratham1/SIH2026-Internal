@@ -8,9 +8,46 @@ Machine Learning Engine for Crop Price Intelligence (SIH-36)
 
 import numpy as np
 import pandas as pd
-import lightgbm as lgb
+
+try:
+    import lightgbm as lgb
+    HAS_LIGHTGBM = True
+except (ImportError, OSError):
+    lgb = None
+    HAS_LIGHTGBM = False
+
 from backend.data_service import CROP_METADATA, MANDI_COORDINATES
 from backend.historical_data import load_agmarknet_historical_series
+
+class FallbackQuantileRegressor:
+    """Analytical Pinball Loss Quantile Regressor fallback if libgomp/C-extensions are unavailable."""
+    def __init__(self, alpha=0.5):
+        self.alpha = alpha
+        self.weights = None
+        self.intercept = 0.0
+
+    def fit(self, X, y):
+        X_mat = np.column_stack([np.ones(len(X)), X.values])
+        y_vec = y.values
+        # Ridge regularized least squares base
+        ridge = np.eye(X_mat.shape[1]) * 0.1
+        ridge[0, 0] = 0.0
+        try:
+            beta = np.linalg.solve(X_mat.T @ X_mat + ridge, X_mat.T @ y_vec)
+        except Exception:
+            beta = np.linalg.pinv(X_mat) @ y_vec
+        
+        preds = X_mat @ beta
+        residuals = y_vec - preds
+        # Shift intercept to match requested quantile of residuals
+        quantile_offset = np.percentile(residuals, self.alpha * 100)
+        beta[0] += quantile_offset
+        self.weights = beta[1:]
+        self.intercept = beta[0]
+        return self
+
+    def predict(self, X):
+        return self.intercept + X.values @ self.weights
 
 class CropPriceMLEngine:
     def __init__(self):
@@ -71,23 +108,29 @@ class CropPriceMLEngine:
         return df
 
     def _train_quantile_models(self, X_train, y_train):
-        """Helper to fit LightGBM quantile regressors for alpha = 0.10, 0.50, 0.90."""
+        """Helper to fit LightGBM (or analytical Pinball fallback) quantile regressors for alpha = 0.10, 0.50, 0.90."""
         trained = {}
         for alpha in [0.10, 0.50, 0.90]:
-            model = lgb.LGBMRegressor(
-                objective="quantile",
-                alpha=alpha,
-                n_estimators=45,
-                learning_rate=0.05,
-                num_leaves=15,
-                min_child_samples=3,
-                reg_alpha=0.1,
-                reg_lambda=0.1,
-                n_jobs=1,
-                verbose=-1,
-                random_state=42
-            )
-            model.fit(X_train, y_train)
+            if HAS_LIGHTGBM and lgb is not None:
+                try:
+                    model = lgb.LGBMRegressor(
+                        objective="quantile",
+                        alpha=alpha,
+                        n_estimators=45,
+                        learning_rate=0.05,
+                        num_leaves=15,
+                        min_child_samples=3,
+                        reg_alpha=0.1,
+                        reg_lambda=0.1,
+                        n_jobs=1,
+                        verbose=-1,
+                        random_state=42
+                    )
+                    model.fit(X_train, y_train)
+                except Exception:
+                    model = FallbackQuantileRegressor(alpha=alpha).fit(X_train, y_train)
+            else:
+                model = FallbackQuantileRegressor(alpha=alpha).fit(X_train, y_train)
             trained[alpha] = model
         return trained
 
