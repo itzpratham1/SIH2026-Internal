@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#234D35"/>
+      <stop offset="100%" stop-color="#143021"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3C363"/>
+      <stop offset="100%" stop-color="#C68A2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+  
+  <!-- Wheat / Crop Icon -->
+  <path d="M256 390 V140" stroke="url(#goldGrad)" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Leaves / Grains -->
+  <path d="M256 160 C230 140 210 160 215 190 C235 195 250 180 256 160 Z" fill="url(#goldGrad)"/>
+  <path d="M256 160 C282 140 302 160 297 190 C277 195 262 180 256 160 Z" fill="url(#goldGrad)"/>
+  
+  <path d="M256 210 C220 190 200 215 208 245 C230 250 248 232 256 210 Z" fill="url(#goldGrad)"/>
+  <path d="M256 210 C292 190 312 215 304 245 C282 250 264 232 256 210 Z" fill="url(#goldGrad)"/>
+  
+  <path d="M256 265 C215 245 195 275 205 305 C228 310 248 290 256 265 Z" fill="url(#goldGrad)"/>
+  <path d="M256 265 C297 245 317 275 307 305 C284 310 264 290 256 265 Z" fill="url(#goldGrad)"/>
+  
+  <!-- AI / Intelligence Pulse Ring -->
+  <circle cx="256" cy="140" r="18" fill="#7FE3A6"/>
+  <path d="M190 360 L240 330 L280 350 L330 310" fill="none" stroke="#7FE3A6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="330" cy="310" r="8" fill="#7FE3A6"/>
+</svg>

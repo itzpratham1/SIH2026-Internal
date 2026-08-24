@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Price Intelligence — SIH 2026</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#234D35">
+<meta name="description" content="Offline-first AI Crop Price Intelligence, Cascade Risk Evaluation, and MSP Safety Net Platform for farmers (SIH-36).">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F6F1; --ink:#2B2A25; --ink-muted:#6B6A5E; --ink-faint:#9C9A8C;
+    --green:#234D35; --green-light:#E7EFE7;
+    --gold:#C68A2E; --gold-light:#FBF0DC;
+    --terracotta:#B3452D; --terracotta-light:#F7E7E1;
+    --teal:#2A6F7F; --teal-light:#E4F0F1;
+    --border:#DEDACD; --card:#FFFFFF; --ledger:rgba(43,42,37,0.028);
+    --font-display:'Fraunces', Georgia, 'Iowan Old Style', serif;
+    --font-body:'IBM Plex Sans','IBM Plex Sans Devanagari','Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --radius:14px;
+  }
+  [data-theme="dark"]{
+    --bg:#1C1B17; --ink:#EDEAE0; --ink-muted:#B5B2A4; --ink-faint:#83806F;
+    --green:#4C8F6C; --green-light:#1E332A;
+    --gold:#D9A44E; --gold-light:#3A2E17;
+    --terracotta:#E28468; --terracotta-light:#3A2019;
+    --teal:#5AB0C2; --teal-light:#17303A;
+    --border:#3A382F; --card:#242319; --ledger:rgba(255,255,255,0.025);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background: repeating-linear-gradient(180deg, var(--ledger) 0px, var(--ledger) 1px, transparent 1px, transparent 34px), var(--bg);
+    font-family:var(--font-body); color:var(--ink); min-height:100vh;
+    padding:2.5rem 1rem 4rem; transition:background 0.25s ease, color 0.25s ease;
+  }
+  .wrap{max-width:920px; margin:0 auto;}
+  .masthead{text-align:center; margin-bottom:2rem; position:relative;}
+  .masthead .eyebrow{font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;}
+  .masthead h1{font-family:var(--font-display); font-weight:600; font-size:32px; margin:0 0 6px; color:var(--green);}
+  .masthead p{font-size:14px; color:var(--ink-muted); margin:0; max-width:480px; margin-0 auto;}
+  .theme-btn{position:absolute; top:0; right:0; width:34px; height:34px; border-radius:50%; border:0.5px solid var(--border); background:var(--card); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--ink);}
+
+  .stage{display:flex; justify-content:center;}
+  .phone{
+    width:390px; background:var(--card); border-radius:28px; border:0.5px solid var(--border);
+    box-shadow:0 1px 2px rgba(43,42,37,0.06), 0 12px 32px rgba(43,42,37,0.09);
+    overflow:hidden; transition:background 0.25s ease;
+  }
+  .phone-top{background:var(--green); color:#fff; padding:14px 18px 16px;}
+  .phone-top-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:17px;}
+  .brand .dot{width:8px; height:8px; border-radius:50%; background:var(--gold);}
+  .live-tag{display:flex; align-items:center; gap:5px; font-size:10px; color:rgba(255,255,255,0.75); transition:color 0.2s ease;}
+  .pulse{width:6px; height:6px; border-radius:50%; background:#7FE3A6; animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{opacity:1;} 50%{opacity:0.35;} 100%{opacity:1;}}
+
+  .langtoggle{display:flex; background:rgba(255,255,255,0.14); border-radius:20px; padding:2px; margin-bottom:8px;}
+  .langtoggle button{flex:1; border:none; background:transparent; color:#fff; font-size:11px; padding:5px 4px; border-radius:18px; cursor:pointer; font-family:var(--font-body); font-weight:500;}
+  .langtoggle button.active{background:#fff; color:var(--green);}
+
+  .selectors{display:flex; gap:8px;}
+  .selectors select{
+    flex:1; appearance:none; -webkit-appearance:none; background:rgba(255,255,255,0.12); color:#fff;
+    border:0.5px solid rgba(255,255,255,0.35); border-radius:10px; padding:9px 10px; font-size:13px; font-family:var(--font-body); font-weight:500;
+  }
+  .selectors select option{color:#111;}
+
+  .body-pad{padding:18px;}
+
+  .viewtoggle{display:flex; background:var(--bg); border:0.5px solid var(--border); border-radius:20px; padding:2px; margin:14px 18px 0;}
+  .viewtoggle button{flex:1; border:none; background:transparent; color:var(--ink-muted); font-size:11.5px; padding:7px 4px; border-radius:18px; cursor:pointer; font-family:var(--font-body); font-weight:500;}
+  .viewtoggle button.active{background:var(--green); color:#fff;}
+
+  .model-pad{padding:16px 18px 18px; display:none;}
+  .model-pad.show{display:block;}
+  .body-pad.hide{display:none;}
+
+  .mv-section{margin-bottom:16px;}
+  .mv-title{font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+  .mv-box{background:var(--bg); border:0.5px solid var(--border); border-radius:10px; padding:12px;}
+  .mv-note{font-size:9.5px; color:var(--ink-faint); line-height:1.5; margin-top:6px; font-style:italic;}
+
+  .waterfall{display:flex; align-items:flex-end; gap:6px; height:90px; margin-bottom:8px;}
+  .wf-bar-wrap{flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end;}
+  .wf-bar{width:100%; border-radius:4px 4px 0 0; min-height:3px; transition:height 0.3s ease;}
+  .wf-val{font-size:9px; color:var(--ink-muted); margin-bottom:3px; font-weight:600;}
+  .wf-label{font-size:8.5px; color:var(--ink-faint); margin-top:5px; text-align:center; line-height:1.2;}
+
+  .backtest-chart{width:100%; height:70px;}
+  .backtest-legend{display:flex; gap:14px; font-size:9.5px; color:var(--ink-muted); margin-top:6px;}
+  .backtest-legend span{display:flex; align-items:center; gap:4px;}
+  .legend-dot{width:8px; height:8px; border-radius:50%;}
+
+  .stat-row{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:0.5px solid var(--border);}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-label{font-size:10.5px; color:var(--ink-muted);}
+  .stat-val{font-size:13px; font-weight:600; font-family:var(--font-display);}
+
+  .congestion-bar-track{height:8px; border-radius:4px; background:var(--border); overflow:hidden; margin:8px 0 4px;}
+  .congestion-bar-fill{height:100%; border-radius:4px; transition:width 0.4s ease;}
+
+  .log-item{display:flex; gap:8px; padding:7px 0; border-bottom:0.5px solid var(--border); font-size:10.5px;}
+  .log-item:last-child{border-bottom:none;}
+  .log-dot{width:7px; height:7px; border-radius:50%; margin-top:3px; flex-shrink:0;}
+  .log-text{color:var(--ink-muted); line-height:1.4;}
+  .log-text b{color:var(--ink);}
+
+  .price-row{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:2px;}
+  .price-left{display:flex; align-items:baseline; gap:8px;}
+  .price-row .amt{font-family:var(--font-display); font-size:32px; font-weight:600;}
+  .price-row .unit{font-size:12.5px; color:var(--ink-muted);}
+  .voice-btn{background:var(--bg); border:0.5px solid var(--border); border-radius:8px; padding:4px 8px; cursor:pointer; font-size:11px; display:flex; align-items:center; gap:4px; color:var(--ink);}
+  .voice-btn:hover{background:var(--green-light); border-color:var(--green);}
+  .range-line{font-size:12px; color:var(--ink-faint); margin-bottom:8px;}
+
+  .spark-wrap{margin-bottom:14px;}
+  .spark-label{font-size:10px; color:var(--ink-faint); margin-bottom:3px;}
+
+  .verdict-card{border-radius:12px; padding:14px 15px; margin-bottom:14px; transition:background 0.25s ease;}
+  .verdict-top{display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+  .verdict-label{font-family:var(--font-display); font-weight:600; font-size:16.5px;}
+  .verdict-reason{font-size:12.5px; line-height:1.5; margin:0;}
+
+  .scale-wrap{margin:16px 0 14px;}
+  .scale-label-row{display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-faint); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;}
+  .beam-track{position:relative; height:10px; border-radius:6px; background:linear-gradient(90deg, var(--terracotta) 0%, var(--terracotta) 33%, var(--gold) 33%, var(--gold) 66%, var(--teal) 66%, var(--teal) 100%); opacity:0.28;}
+  .beam-pointer{position:absolute; top:-5px; width:20px; height:20px; border-radius:50%; background:var(--card); border:3px solid var(--ink); transform:translateX(-50%); transition:left 0.45s cubic-bezier(.4,0,.2,1);}
+  .scale-zones{display:flex; justify-content:space-between; font-size:10px; color:var(--ink-faint); margin-top:6px;}
+
+  .why-toggle{width:100%; background:var(--card); border:0.5px solid var(--border); border-radius:10px; padding:9px; font-size:12.5px; font-family:var(--font-body); font-weight:500; color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:12px;}
+  .why-toggle svg{transition:transform 0.2s ease;}
+  .why-toggle.open svg{transform:rotate(180deg);}
+
+  .factors{display:none; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px;}
+  .factors.show{display:grid;}
+  .factor{padding:9px 10px; border-radius:10px; background:var(--bg); border:0.5px solid var(--border);}
+  .factor .flabel{font-size:9.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:5px;}
+  .factor .fbar{height:4px; border-radius:2px; background:var(--border); overflow:hidden; margin-bottom:4px;}
+  .factor .fbar-fill{height:100%; border-radius:2px;}
+  .factor .fdetail{font-size:10.5px; color:var(--ink-muted); font-weight:500;}
+
+  .section-label{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-faint); margin:16px 0 8px; font-weight:500;}
+
+  .mandi-row{display:flex; align-items:center; justify-content:space-between; padding:9px 10px; border-radius:10px; background:var(--bg); border:0.5px solid var(--border); margin-bottom:6px;}
+  .mandi-row.best{background:var(--green-light); border-color:var(--green);}
+  .mandi-left{display:flex; flex-direction:column;}
+  .mandi-name{font-size:12.5px; font-weight:500;}
+  .mandi-dist{font-size:10.5px; color:var(--ink-faint);}
+  .mandi-right{text-align:right;}
+  .mandi-net{font-size:13px; font-weight:600;}
+  .mandi-tag{font-size:9px; color:var(--green); font-weight:600; text-transform:uppercase;}
+
+  .calc-box{background:var(--bg); border:0.5px solid var(--border); border-radius:10px; padding:12px;}
+  .calc-inputs{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:10px;}
+  .calc-field label{display:block; font-size:10px; color:var(--ink-faint); margin-bottom:3px;}
+  .calc-field input{width:100%; padding:7px 8px; border-radius:8px; border:0.5px solid var(--border); font-size:12px; font-family:var(--font-body); background:var(--card); color:var(--ink);}
+  .calc-result{font-size:12px; color:var(--ink-muted);}
+  .calc-result b{color:var(--ink); font-family:var(--font-display); font-size:15px;}
+
+  .target-box{display:flex; gap:8px; margin-top:6px;}
+  .target-box input{flex:1; padding:8px 10px; border-radius:8px; border:0.5px solid var(--border); font-size:12.5px; font-family:var(--font-body); background:var(--card); color:var(--ink);}
+  .target-box button{padding:8px 14px; border-radius:8px; border:none; background:var(--green); color:#fff; font-size:12.5px; font-weight:500; cursor:pointer; font-family:var(--font-body);}
+  .target-answer{margin-top:8px; font-size:12.5px; padding:8px 10px; border-radius:8px; display:none;}
+  .target-answer.show{display:block;}
+
+  .scheme-banner{display:none; align-items:flex-start; gap:8px; background:var(--gold-light); border:0.5px solid var(--gold); border-radius:10px; padding:10px 11px; margin-top:14px; font-size:11.5px; line-height:1.5;}
+  .scheme-banner.show{display:flex;}
+
+  /* Govt MSP Safety Net Alert Card */
+  .msp-alert-card{display:none; background:var(--terracotta-light); border:1.5px solid var(--terracotta); border-radius:12px; padding:13px 14px; margin-top:14px; box-shadow:0 2px 8px rgba(179,69,45,0.12);}
+  .msp-alert-card.show{display:block; animation:fadeIn 0.3s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);}}
+  .msp-alert-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .msp-alert-tag{display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--terracotta); background:rgba(179,69,45,0.14); padding:3px 8px; border-radius:12px;}
+  .msp-alert-title{font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--terracotta); margin:6px 0 4px;}
+  .msp-alert-body{font-size:11.5px; line-height:1.45; color:var(--ink); margin-bottom:10px;}
+  .msp-alert-stats{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; background:rgba(179,69,45,0.08); border-radius:8px; padding:8px 10px; margin-bottom:10px;}
+  .msp-stat-item{text-align:center;}
+  .msp-stat-label{font-size:9px; color:var(--ink-muted); text-transform:uppercase; margin-bottom:2px;}
+  .msp-stat-val{font-size:13px; font-weight:600; color:var(--terracotta); font-family:var(--font-display);}
+  .msp-proc-box{background:var(--card); border:0.5px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:10px; font-size:11px; line-height:1.4;}
+  .msp-proc-box b{color:var(--ink);}
+  .msp-action-row{display:flex; gap:6px;}
+  .msp-btn{flex:1; background:var(--terracotta); color:#fff; border:none; border-radius:8px; padding:7px 10px; font-size:11px; font-weight:600; cursor:pointer; text-align:center; text-decoration:none; display:inline-block; font-family:var(--font-body);}
+  .msp-btn:hover{opacity:0.9;}
+  .msp-btn-sec{background:var(--card); color:var(--ink); border:0.5px solid var(--border); border-radius:8px; padding:7px 10px; font-size:11px; font-weight:500; cursor:pointer; text-align:center; text-decoration:none; display:inline-block; font-family:var(--font-body);}
+
+  .updated-line{display:flex; align-items:center; gap:6px; justify-content:center; font-size:10.5px; color:var(--ink-faint); margin-top:10px;}
+  .footer-note{text-align:center; font-size:11px; color:var(--ink-faint); margin-top:18px; max-width:420px; margin-left:auto; margin-right:auto; line-height:1.5;}
+
+  /* Scenario Simulator Drawer */
+  .sim-toggle-btn{display:block; margin:14px auto 0; background:var(--bg); border:0.5px dashed var(--border); border-radius:8px; padding:6px 12px; font-size:11px; color:var(--ink-muted); cursor:pointer;}
+  .sim-panel{display:none; margin-top:10px; background:var(--bg); border:0.5px solid var(--border); border-radius:10px; padding:10px; font-size:11px;}
+  .sim-panel.open{display:block;}
+  .sim-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+  .sim-row:last-child{margin-bottom:0;}
+  .sim-btn{background:var(--card); border:0.5px solid var(--border); border-radius:6px; padding:4px 8px; font-size:10px; cursor:pointer; color:var(--ink);}
+  .sim-btn:hover{background:var(--green-light);}
+  .sim-btn.danger{border-color:var(--terracotta); color:var(--terracotta);}
+  .sim-btn.danger:hover{background:var(--terracotta-light);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="masthead">
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+    <h1>Crop Price Intelligence</h1>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="phone-top">
+        <div class="phone-top-row">
+          <div class="brand"><span class="dot"></span>Team NODE VI</div>
+          <div class="live-tag" id="networkStatusTag"><span class="pulse" id="networkPulse"></span><span id="liveLabel">Agmarknet Live</span></div>
+        </div>
+
+        <div class="langtoggle">
+          <button id="btnEN" class="active" onclick="setLang('en')">EN</button>
+          <button id="btnHI" onclick="setLang('hi')">हिं</button>
+          <button id="btnMR" onclick="setLang('mr')">मरा</button>
+          <button id="btnBN" onclick="setLang('bn')">বাংলা</button>
+        </div>
+        <div class="selectors">
+          <select id="cropSelect" onchange="render()"></select>
+          <select id="districtSelect" onchange="render()"></select>
+        </div>
+      </div>
+
+      <div class="viewtoggle">
+        <button id="btnFarmerView" class="active" onclick="setView('farmer')">Farmer View</button>
+        <button id="btnModelView" onclick="setView('model')">Model View</button>
+      </div>
+
+      <!-- Farmer Pad -->
+      <div class="body-pad" id="farmerPad">
+        <div class="price-row">
+          <div class="price-left">
+            <span class="amt" id="priceNow">—</span>
+            <span class="unit" id="priceUnit">/ quintal today</span>
+          </div>
+          <button class="voice-btn" onclick="speakVerdict()" title="Voice Readout (Bhashini AI / TTS)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <span id="lblListen">Listen</span>
+          </button>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; margin:2px 0 6px;">
+          <span id="mspFloorBadge" style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; color:var(--green); background:var(--green-light); padding:2px 8px; border-radius:10px; border:0.5px solid rgba(35,77,53,0.25);">🛡️ Govt MSP: ₹2,275/qtl (Safety Floor)</span>
+        </div>
+        <div class="range-line" id="rangeLine"></div>
+
+        <div class="spark-wrap">
+          <div class="spark-label" id="sparkLabel">14-day trend</div>
+          <svg id="sparkline" width="100%" height="40" viewBox="0 0 340 40" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="verdict-card" id="verdictCard">
+          <div class="verdict-top">
+            <svg id="verdictIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+            <span class="verdict-label" id="verdictLabel"></span>
+          </div>
+          <p class="verdict-reason" id="verdictReason"></p>
+        </div>
+
+        <div class="scale-wrap">
+          <div class="scale-label-row"><span id="lblCascade">Cascade score</span><span id="cascadeNum"></span></div>
+          <div class="beam-track"><div class="beam-pointer" id="beamPointer"></div></div>
+          <div class="scale-zones"><span id="zoneSell">Sell</span><span id="zoneWait">Wait</span><span id="zoneMove">Move</span></div>
+        </div>
+
+        <button class="why-toggle" id="whyToggle" onclick="toggleWhy()">
+          <span id="whyLabel">See why</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <div class="factors" id="factorsGrid"></div>
+
+        <div class="section-label" id="lblBestMandi">Best mandi (net of OSRM road transport)</div>
+        <div id="mandiList"></div>
+
+        <div class="section-label" id="lblCalc">Profit calculator (OSRM Road Routing)</div>
+        <div class="calc-box">
+          <div class="calc-inputs">
+            <div class="calc-field"><label id="lblQty">Quintals</label><input type="number" id="qty" value="10" oninput="renderCalc()"></div>
+            <div class="calc-field"><label id="lblFuel">Fuel ₹/km</label><input type="number" id="fuel" value="12" oninput="renderCalc()"></div>
+            <div class="calc-field"><label id="lblLabor">Labor ₹ (flat)</label><input type="number" id="labor" value="300" oninput="renderCalc()"></div>
+          </div>
+          <div class="calc-result" id="calcResult"></div>
+        </div>
+
+        <div class="section-label" id="lblTarget">Will it cross a target price?</div>
+        <div class="target-box">
+          <input type="number" id="targetPrice" placeholder="e.g. 2400">
+          <button onclick="checkTarget()" id="btnCheck">Check</button>
+        </div>
+        <div class="target-answer" id="targetAnswer"></div>
+
+        <div class="scheme-banner" id="schemeBanner"></div>
+
+        <!-- Govt MSP Safety Net Warning Card -->
+        <div class="msp-alert-card" id="mspAlertCard">
+          <div class="msp-alert-head">
+            <span class="msp-alert-tag" id="mspTag">🚨 MSP Safety Net</span>
+            <span style="font-size:10px; color:var(--terracotta); font-weight:600;" id="mspHelpline">Helpline: 181</span>
+          </div>
+          <div class="msp-alert-title" id="mspTitle">Selling Below Govt MSP!</div>
+          <div class="msp-alert-body" id="mspDesc">Current Mandi price is below the official Government Minimum Support Price. Avoid distress sale.</div>
+          
+          <div class="msp-alert-stats">
+            <div class="msp-stat-item">
+              <div class="msp-stat-label" id="lblMspFloor">Govt MSP</div>
+              <div class="msp-stat-val" id="mspValFloor">₹2,275</div>
+            </div>
+            <div class="msp-stat-item">
+              <div class="msp-stat-label" id="lblMspMandi">Mandi Rate</div>
+              <div class="msp-stat-val" id="mspValMandi">₹2,100</div>
+            </div>
+            <div class="msp-stat-item">
+              <div class="msp-stat-label" id="lblMspGap">Loss / Qtl</div>
+              <div class="msp-stat-val" id="mspValGap">-₹175</div>
+            </div>
+          </div>
+
+          <div class="msp-proc-box" id="mspProcBox">
+            <div style="font-size:9.5px; color:var(--ink-faint); text-transform:uppercase; margin-bottom:2px;" id="lblProcCenter">Nearest Govt Procurement Center</div>
+            <div style="font-weight:600; font-size:11.5px; color:var(--ink);" id="mspCenterName">FCI Central Depot, Lashkar</div>
+            <div style="font-size:10.5px; color:var(--ink-muted);" id="mspCenterDist">4.2 km from Lashkar Mandi · MPSCSC Centre</div>
+          </div>
+
+          <div class="msp-action-row">
+            <a href="https://mpeuparjan.nic.in" target="_blank" rel="noopener" class="msp-btn" id="btnMspRegister">e-Uparjan MP Portal</a>
+            <button class="msp-btn-sec" onclick="alert('FCI / MPSCSC Procurement Desk:\nHelpline: 181 / 1800-180-1551\nFarmer Registration Mandatory on e-Uparjan\nDocuments: Samagra ID, Aadhaar, Khasra/Land Record, Bank Passbook.')" id="btnMspGuide">Guidelines</button>
+          </div>
+        </div>
+
+        <!-- Scenario Simulator Drawer -->
+        <button class="sim-toggle-btn" onclick="toggleSim()">⚡ Live Scenario Simulator</button>
+        <div class="sim-panel" id="simPanel">
+          <div class="sim-row">
+            <span>Climate Anomaly (+15mm unseasonal rain):</span>
+            <button class="sim-btn" onclick="applySim('rain')">Trigger</button>
+          </div>
+          <div class="sim-row">
+            <span>Spatial Shock (+15% in Morena):</span>
+            <button class="sim-btn" onclick="applySim('spatial')">Trigger</button>
+          </div>
+          <div class="sim-row">
+            <span>Mandi Congestion (>28 farmers/hr):</span>
+            <button class="sim-btn" onclick="applySim('congestion')">Trigger</button>
+          </div>
+          <div class="sim-row">
+            <span>Distress Below-MSP Price Drop:</span>
+            <button class="sim-btn danger" onclick="applySim('msp_drop')">Trigger Alert</button>
+          </div>
+          <div class="sim-row">
+            <span>Reset to Real Baseline:</span>
+            <button class="sim-btn" onclick="resetSim()">Reset</button>
+          </div>
+        </div>
+
+        <div class="updated-line"><span class="pulse" style="background:var(--ink-faint);"></span><span id="updatedLine"></span></div>
+      </div>
+
+      <!-- Model Pad -->
+      <div class="model-pad" id="modelPad">
+        <div class="mv-section">
+          <div class="mv-title">Feature contribution to today's prediction (SHAP)</div>
+          <div class="mv-box">
+            <div class="waterfall" id="waterfallChart"></div>
+            <div class="mv-note">SHAP-style attribution — shows how LightGBM inputs pushed the prediction up/down from the crop's baseline price.</div>
+          </div>
+        </div>
+
+        <div class="mv-section">
+          <div class="mv-title">Walk-forward backtest — predicted vs. actual (14d)</div>
+          <div class="mv-box">
+            <svg id="backtestChart" class="backtest-chart" viewBox="0 0 340 70" preserveAspectRatio="none"></svg>
+            <div class="backtest-legend">
+              <span><span class="legend-dot" style="background:var(--ink-faint);"></span>Actual</span>
+              <span><span class="legend-dot" style="background:var(--teal);"></span>Predicted (Quantile 50th)</span>
+            </div>
+            <div class="mv-note" id="mdaNote"></div>
+          </div>
+        </div>
+
+        <div class="mv-section">
+          <div class="mv-title">Confidence calibration (Quantile Pinball Loss)</div>
+          <div class="mv-box">
+            <div class="stat-row"><span class="stat-label">80% prediction interval hit rate [Q10–Q90]</span><span class="stat-val" id="calibVal">87%</span></div>
+            <div class="stat-row"><span class="stat-label">Mean Directional Accuracy (14d backtest)</span><span class="stat-val" id="mdaVal">86%</span></div>
+            <div class="mv-note">Quantile regression objective ensures predicted price intervals reflect genuine statistical uncertainty rather than artificial point precision.</div>
+          </div>
+        </div>
+
+        <div class="mv-section">
+          <div class="mv-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Recommendation congestion (mandi-flooding safeguard)</span>
+            <button class="sim-btn" style="font-size:10px; padding:2px 8px; margin:0;" onclick="resetSim()" title="Reset Inflow & Congestion to Zero Baseline">Reset Baseline</button>
+          </div>
+          <div class="mv-box">
+            <div class="stat-row"><span class="stat-label" id="congestLabel">Estimated Mandi Inflow Pressure (Last 60m)</span><span class="stat-val" id="congestVal">0</span></div>
+            <div class="stat-row" style="font-size:11px; opacity:0.85; margin-top:-2px;"><span class="stat-label">Model conversion</span><span class="stat-val" id="congestBreakdown" style="font-size:11px; font-weight:500;">0 views (30%) · 0 routes (85%)</span></div>
+            <div class="congestion-bar-track"><div class="congestion-bar-fill" id="congestBar"></div></div>
+            <div class="mv-note" id="congestNote">Within normal limits — no recommendation suppression active.</div>
+          </div>
+        </div>
+
+        <div class="mv-section" style="margin-bottom:0;">
+          <div class="mv-title">Reversal alert log</div>
+          <div class="mv-box" id="reversalLog"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <p class="footer-note" id="footerNote"></p>
+</div>
+
+<script>
+// ---------- Real Data Service & Engine Client ----------
+const DATA = {
+  onion: {
+    label:{en:"Onion (प्याज़)", hi:"प्याज़", mr:"कांदा", bn:"পেঁয়াজ"}, unit:{en:"quintal", hi:"क्विंटल", mr:"क्विंटल", bn:"কুইন্টাল"}, perishable:false, shelfDays:45, mspActive:false, mspPrice:0,
+    districts:{
+      gwalior:{ name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"}, price:2484, rangeLow:2360, rangeHigh:2610,
+        momentum:33, momentumPct:-6, climate:57, climateRain:9, climateNormal:12, spatial:70, spatialPct:11, policy:35, policyType:'none',
+        mandis:[{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:0,price:2484},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:35,price:2500},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:65,price:2522},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:115,price:800}] },
+      morena:{ name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"}, price:2500, rangeLow:2400, rangeHigh:2650,
+        momentum:30, momentumPct:-8, climate:55, climateRain:8, climateNormal:12, spatial:74, spatialPct:12, policy:35, policyType:'none',
+        mandis:[{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:0,price:2500},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:35,price:2484},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:85,price:2522},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:145,price:800}] },
+      bhind:{ name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"}, price:2522, rangeLow:2400, rangeHigh:2650,
+        momentum:48, momentumPct:+1, climate:60, climateRain:11, climateNormal:12, spatial:50, spatialPct:3, policy:35, policyType:'none',
+        mandis:[{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:0,price:2522},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালियर"},dist:65,price:2484},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:85,price:2500},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:175,price:800}] },
+      shivpuri:{ name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"}, price:800, rangeLow:700, rangeHigh:900,
+        momentum:36, momentumPct:-4, climate:52, climateRain:9, climateNormal:12, spatial:65, spatialPct:6, policy:35, policyType:'none',
+        mandis:[{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:0,price:800},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:115,price:2484},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:145,price:2500},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:175,price:2522}] }
+    }
+  },
+  wheat: {
+    label:{en:"Wheat (गेहूं)", hi:"गेहूं", mr:"गहू", bn:"গম"}, unit:{en:"quintal", hi:"क्विंटल", mr:"क्विंटल", bn:"কুইন্টাল"}, perishable:false, shelfDays:270, mspActive:true, mspPrice:2275,
+    districts:{
+      gwalior:{ name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"}, price:2625, rangeLow:2550, rangeHigh:2675,
+        momentum:64, momentumPct:7, climate:52, climateRain:6, climateNormal:5, spatial:45, spatialPct:2, policy:80, policyType:'msp',
+        mandis:[{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:0,price:2625},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:35,price:2622},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:65,price:2515},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:115,price:2525}] },
+      morena:{ name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"}, price:2622, rangeLow:2550, rangeHigh:2650,
+        momentum:58, momentumPct:5, climate:50, climateRain:5, climateNormal:5, spatial:50, spatialPct:1, policy:80, policyType:'msp',
+        mandis:[{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:0,price:2622},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:35,price:2625},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:85,price:2515},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:145,price:2525}] },
+      bhind:{ name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"}, price:2515, rangeLow:2480, rangeHigh:2560,
+        momentum:68, momentumPct:9, climate:54, climateRain:6, climateNormal:5, spatial:40, spatialPct:0, policy:80, policyType:'msp',
+        mandis:[{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:0,price:2515},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:65,price:2625},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:85,price:2622},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:175,price:2525}] },
+      shivpuri:{ name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"}, price:2525, rangeLow:2480, rangeHigh:2560,
+        momentum:52, momentumPct:3, climate:48, climateRain:4, climateNormal:5, spatial:55, spatialPct:3, policy:80, policyType:'msp',
+        mandis:[{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:0,price:2525},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:115,price:2625},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:145,price:2622},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:175,price:2515}] }
+    }
+  },
+  tomato: {
+    label:{en:"Tomato (टमाटर)", hi:"टमाटर", mr:"टोमॅटो", bn:"টমেটো"}, unit:{en:"quintal", hi:"क्विंटल", mr:"क्विंटल", bn:"কুইন্টাল"}, perishable:true, shelfDays:4, mspActive:false, mspPrice:0,
+    districts:{
+      gwalior:{ name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"}, price:1655, rangeLow:1570, rangeHigh:1740,
+        momentum:26, momentumPct:-7, climate:66, climateRain:13, climateNormal:8, spatial:72, spatialPct:9, policy:20, policyType:'none',
+        mandis:[{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:0,price:1655},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:35,price:1000},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:65,price:1680},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:115,price:2000}] },
+      morena:{ name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"}, price:1000, rangeLow:950, rangeHigh:1060,
+        momentum:42, momentumPct:2, climate:62, climateRain:11, climateNormal:8, spatial:50, spatialPct:2, policy:20, policyType:'none',
+        mandis:[{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:0,price:1000},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:35,price:1655},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:85,price:1680},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:145,price:2000}] },
+      bhind:{ name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"}, price:1680, rangeLow:1600, rangeHigh:1760,
+        momentum:22, momentumPct:-11, climate:64, climateRain:12, climateNormal:8, spatial:70, spatialPct:10, policy:20, policyType:'none',
+        mandis:[{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:0,price:1680},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:85,price:1000},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:65,price:1655},{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:175,price:2000}] },
+      shivpuri:{ name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"}, price:2000, rangeLow:1900, rangeHigh:2100,
+        momentum:20, momentumPct:-12, climate:58, climateRain:10, climateNormal:8, spatial:66, spatialPct:8, policy:20, policyType:'none',
+        mandis:[{name:{en:"Shivpuri",hi:"शिवपुरी",mr:"शिवपुरी",bn:"শিবপুরী"},dist:0,price:2000},{name:{en:"Gwalior",hi:"ग्वालियर",mr:"ग्वाल्हेर",bn:"গোয়ালিয়র"},dist:115,price:1655},{name:{en:"Morena",hi:"मुरैना",mr:"मुरैना",bn:"মুরৈना"},dist:145,price:1000},{name:{en:"Bhind",hi:"भिंड",mr:"भिंड",bn:"ভিন্দ"},dist:175,price:1680}] }
+    }
+  }
+};
+
+const STR = {
+  en:{
+    sellNow:"Sell now", wait:"Wait a few days", move:"Sell at {m} instead",
+    zSell:"Sell", zWait:"Wait", zMove:"Move", cascade:"Cascade score",
+    best:"Best mandi (net of OSRM road transport)", calc:"Profit calculator (OSRM Road Routing)",
+    target:"Will it cross a target price?", targetPlaceholder:"e.g. 2400",
+    qty:"Quintals", fuel:"Fuel ₹/km", labor:"Labor ₹ (flat)", check:"Check",
+    seeWhy:"See why", hideWhy:"Hide details",
+    momentum:"Trend", climate:"Weather", spatial:"Nearby mandis", policy:"Policy / MSP",
+    here:"Here", best2:"Best", live:"Agmarknet Live",
+    farmerView:"Farmer View", modelView:"Model View",
+    today:"today", kmRoad:"km (OSRM Road)",
+    scheme:"Government scheme flagged: MSP procurement is active for Wheat in Madhya Pradesh — worth checking eligibility.",
+    footer:"SIH-36 Live Prototype · Gwalior Cluster (MP) · Open-Meteo, OSRM Road Routing, LightGBM Quantile Pinball Loss & Bhashini Voice Integration.",
+    perishNote:"Perishable crop — the app never recommends waiting past its shelf life.",
+    targetLikely:"Likely — historically this range is achievable within 7 days.",
+    targetPossible:"Possible, but not certain — sits within the LightGBM 80% confidence interval.",
+    targetUnlikely:"Unlikely in the next 7 days based on current trends.",
+    netProfit:"Net profit at", spark:"14-day trend", vsAvg:"vs 30-day avg", inDays:"in 3 days",
+    mspActive:"MSP window active", importPressure:"Import pressure rising", noSignal:"No strong signal",
+    updated:"Updated just now", listen:"Listen",
+    rangePrefix:"LightGBM 80% Range [Q10–Q90]: ",
+    reasonPerishMove:"{m} offers higher rates. Perishable crop with 4-day shelf life — prompt sale advised.",
+    reasonPerishSell:"Perishable crop with {days}-day shelf life. Immediate sale prevents post-harvest decay.",
+    reasonSellLow:"{d} prices have faced downward pressure — selling now prevents loss.",
+    reasonMoveHigh:"{m} prices surged by {pct}%. Transporting nets higher margin.",
+    reasonWaitSteady:"Market prices are steady. Holding for ~5 days offers price support.",
+    reasonWaitStrong:"Strong upward momentum and government support window active.",
+    verdictTpl:"In {d} mandi, today's recommendation: {v}. {r}",
+    mspTag:"🚨 MSP Safety Net",
+    mspTitle:"Selling Below Govt MSP!",
+    mspDesc:"Current mandi price is below official MSP. Distress selling will lead to a direct loss of ₹{gap}/quintal. Sell through the Government procurement center instead.",
+    mspFloor:"Govt MSP Floor",
+    mspMandiRate:"Local Mandi",
+    mspLossPerQtl:"Loss / Qtl",
+    mspProcHeader:"Nearest Govt Procurement Center",
+    mspPortalBtn:"e-Uparjan MP Portal",
+    mspGuidelinesBtn:"Guidelines",
+    mspHelplineText:"Helpline: 181",
+    offlineTag:"📶 Offline Mode (Cached)"
+  },
+  hi:{
+    sellNow:"अभी बेचें", wait:"कुछ दिन प्रतीक्षा करें", move:"{m} में बेचें",
+    zSell:"बेचें", zWait:"रुकें", zMove:"बदलें", cascade:"कैस्केड स्कोर",
+    best:"सबसे अच्छी मंडी (सड़क परिवहन घटाकर)", calc:"मुनाफ़ा कैलकुलेटर (OSRM सड़क मार्ग)",
+    target:"क्या कीमत इस स्तर को पार करेगी?", targetPlaceholder:"उदा. 2400",
+    qty:"क्विंटल", fuel:"ईंधन ₹/किमी", labor:"मज़दूरी ₹ (निश्चित)", check:"जांचें",
+    seeWhy:"कारण देखें", hideWhy:"विवरण छुपाएं",
+    momentum:"रुझान", climate:"मौसम", spatial:"पास की मंडियाँ", policy:"नीति/MSP",
+    here:"यहीं", best2:"बेहतर", live:"एगमार्कनेट लाइव",
+    farmerView:"किसान दृश्य", modelView:"मॉडल दृश्य",
+    today:"आज", kmRoad:"किमी (सड़क मार्ग)",
+    scheme:"सरकारी योजना: मध्य प्रदेश में गेहूं के लिए MSP खरीद चालू है — पात्रता जांचें।",
+    footer:"SIH-36 लाइव प्रोटोटाइप · ग्वालियर क्लस्टर (म.प्र.) · Open-Meteo, OSRM सड़क दूरी, LightGBM क्वांटाइल रिग्रेशन और भाषिणी वॉइस।",
+    perishNote:"जल्दी खराब होने वाली फ़सल — यह ऐप सुरक्षित अवधि से ज़्यादा इंतज़ार की सलाह कभी नहीं देता।",
+    targetLikely:"संभावना अधिक — यह सीमा आमतौर पर 7 दिनों में हासिल हो जाती है।",
+    targetPossible:"हो सकता है, पक्का नहीं — यह LightGBM 80% सीमा में है।",
+    targetUnlikely:"मौजूदा रुझान के अनुसार अगले 7 दिनों में यह मुश्किल है।",
+    netProfit:"शुद्ध मुनाफ़ा", spark:"14-दिन का रुझान", vsAvg:"30-दिन औसत से", inDays:"3 दिनों में",
+    mspActive:"MSP सक्रिय", importPressure:"आयात दबाव बढ़ रहा", noSignal:"कोई मज़बूत संकेत नहीं",
+    updated:"अभी अपडेट हुआ", listen:"सुनें",
+    rangePrefix:"LightGBM 80% अनुमानित दायरा [Q10–Q90]: ",
+    reasonPerishMove:"{m} में अधिक दाम मिल रहे हैं। 4-दिन की शेल्फ लाइफ वाली खराब होने योग्य फ़सल — तुरंत बिक्री की सलाह दी जाती है।",
+    reasonPerishSell:"{days}-दिन की सीमित शेल्फ लाइफ। तुरंत बिक्री से फसल खराब होने और नुकसान से बचा जा सकता है।",
+    reasonSellLow:"{d} में कीमतों पर गिरावट का दबाव है — अभी बेचने से नुकसान से बचा जा सकता है।",
+    reasonMoveHigh:"{m} में कीमतों में {pct}% का उछाल आया है। वहाँ ले जाने से अधिक शुद्ध मुनाफ़ा मिलेगा।",
+    reasonWaitSteady:"बाजार भाव स्थिर हैं। लगभग 5 दिन रुकने से बेहतर मूल्य समर्थन मिलेगा।",
+    reasonWaitStrong:"मजबूत बढ़त का रुझान और सरकारी MSP समर्थन खिड़की सक्रिय है।",
+    verdictTpl:"{d} मंडी में आज का फैसला: {v}। {r}",
+    mspTag:"🚨 न्यूनतम समर्थन मूल्य (MSP) सुरक्षा अलर्ट",
+    mspTitle:"मंडी भाव सरकारी MSP से नीचे!",
+    mspDesc:"मंडी का भाव न्यूनतम समर्थन मूल्य (MSP) से ₹{gap}/क्विंटल कम है। औने-पौने दाम में न बेचें! नजदीकी सरकारी खरीद केंद्र पर MSP पर बेचें।",
+    mspFloor:"सरकारी MSP",
+    mspMandiRate:"मंडी भाव",
+    mspLossPerQtl:"नुकसान / क्विंटल",
+    mspProcHeader:"नजदीकी सरकारी खरीद केंद्र",
+    mspPortalBtn:"ई-उपार्जन एमपी पोर्टल",
+    mspGuidelinesBtn:"खरीद निर्देश",
+    mspHelplineText:"हेल्पलाइन: 181",
+    offlineTag:"📶 ऑफलाइन मोड (संग्रहीत)"
+  },
+  mr:{
+    sellNow:"आत्ताच विका", wait:"काही दिवस थांबा", move:"{m} इथे विका",
+    zSell:"विका", zWait:"थांबा", zMove:"बदला", cascade:"कॅस्केड स्कोअर",
+    best:"सर्वोत्तम मंडई (वाहतूक वजा करून)", calc:"नफा कॅल्क्युलेटर (OSRM रस्ता मार्ग)",
+    target:"किंमत या पातळीवर जाईल का?", targetPlaceholder:"उदा. 2400",
+    qty:"क्विंटल", fuel:"इंधन ₹/किमी", labor:"मजुरी ₹ (निश्चित)", check:"तपासा",
+    seeWhy:"कारण पहा", hideWhy:"तपशील लपवा",
+    momentum:"कल", climate:"हवामान", spatial:"जवळच्या मंडई", policy:"धोरण/MSP",
+    here:"इथेच", best2:"उत्तम", live:"एगमार्कनेट लाइव्ह",
+    farmerView:"शेतकरी व्ह्यू", modelView:"मॉडेल व्ह्यू",
+    today:"आज", kmRoad:"किमी (रस्ता)",
+    scheme:"सरकारी योजना: गहू पिकासाठी MSP खरेदी सुरू आहे — तपासा.",
+    footer:"SIH-36 प्रोटोटाइप · ग्वाल्हेर क्लस्टर · Open-Meteo, OSRM रस्ता अंतर, LightGBM आणि भाषिणी व्हॉईस.",
+    perishNote:"लवकर खराब होणारे पीक — हे अ‍ॅप सुरक्षित काळापेक्षा जास्त थांबण्याचा सल्ला कधीच देत नाही.",
+    targetLikely:"शक्यता जास्त — ही किंमत 7 दिवसांत गाठली जाते.",
+    targetPossible:"शक्य आहे — ही अंदाजित सीमेत आहे.",
+    targetUnlikely:"पुढील 7 दिवसांत हे अवघड आहे.",
+    netProfit:"निव्वळ नफा", spark:"14-दिवसांचा कल", vsAvg:"30-दिवस सरासरीच्या तुलनेत", inDays:"3 दिवसांत",
+    mspActive:"MSP सक्रिय", importPressure:"आयात दबाव", noSignal:"मजबूत संकेत नाही",
+    updated:"आत्ताच अपडेट झाले", listen:"ऐका",
+    rangePrefix:"LightGBM 80% अंदाज मर्यादा [Q10–Q90]: ",
+    reasonPerishMove:"{m} येथे अधिक भाव मिळत आहे. 4 दिवसांचे आयुष्य असलेले नाशवंत पीक — त्वरित विक्रीचा सल्ला.",
+    reasonPerishSell:"{days} दिवसांचे मर्यादित आयुष्य असलेले नाशवंत पीक. तातडीने विक्री केल्यास नुकसान टळेल.",
+    reasonSellLow:"{d} मध्ये भावावर घसरणीचा दबाव आहे — आताच विक्री केल्यास नुकसान टळेल.",
+    reasonMoveHigh:"{m} मध्ये भावात {pct}% वाढ झाली आहे. तिथे नेल्यास जास्त नफा मिळेल.",
+    reasonWaitSteady:"बाजारभाव स्थिर आहेत. सुमारे 5 दिवस थांबल्यास चांगला आधार मिळेल.",
+    reasonWaitStrong:"मजबूत तेजीचा कल आणि सरकारी आधारभूत किंमत (MSP) विंडो सक्रिय आहे.",
+    verdictTpl:"{d} मंडईत आजचा निर्णय: {v}. {r}",
+    mspTag:"🚨 शासकीय हमीभाव (MSP) सुरक्षा इशारा",
+    mspTitle:"बाजारभाव हमीभावापेक्षा कमी!",
+    mspDesc:"सध्याचा बाजारभाव हमीभावापेक्षा ₹{gap}/क्विंटलने कमी आहे. तोटा सहन करू नका! जवळच्या शासकीय खरेदी केंद्रावर विका.",
+    mspFloor:"शासकीय हमीभाव",
+    mspMandiRate:"स्थानिक भाव",
+    mspLossPerQtl:"तोटा / क्विंटल",
+    mspProcHeader:"जवळचे शासकीय खरेदी केंद्र",
+    mspPortalBtn:"ई-उपार्जन पोर्टल",
+    mspGuidelinesBtn:"मार्गदर्शक तत्त्वे",
+    mspHelplineText:"हेल्पलाइन: 181",
+    offlineTag:"📶 ऑफलाइन मोड (कॅश)"
+  },
+  bn:{
+    sellNow:"এখনই বিক্রি করুন", wait:"কয়েক দিন অপেক্ষা করুন", move:"{m} মান্ডিতে বিক্রি করুন",
+    zSell:"বিক্রি", zWait:"অপেক্ষা", zMove:"বদল", cascade:"ক্যাসকেড স্কোর",
+    best:"সেরা মান্ডি (সড়ক পরিবহন খরচ বাদে)", calc:"মুনাফা ক্যালকুলেটর (OSRM রোড রুট)",
+    target:"দাম কি এই লক্ষ্যমাত্রা ছাড়াবে?", targetPlaceholder:"যেমন ২৪০০",
+    qty:"কুইন্টাল", fuel:"জ্বালানি ₹/কিমি", labor:"মজুরি ₹ (স্থায়ী)", check:"যাচাই করুন",
+    seeWhy:"कारण দেখুন", hideWhy:"বিবরণ লুকান",
+    momentum:"প্রবণতা", climate:"আবহাওয়া", spatial:"কাছের মান্ডিসমূহ", policy:"নীতি/MSP",
+    here:"এখানেই", best2:"সেরা", live:"অ্যাগমার্কনেট লাইভ",
+    farmerView:"কৃষক ভিউ", modelView:"মডেল ভিউ",
+    today:"আজ", kmRoad:"কিমি (সড়ক পথ)",
+    scheme:"সরকারি প্রকল্প: মধ্যপ্রদেশে গমের জন্য MSP ক্রয় চালু রয়েছে — যোগ্যতা যাচাই করুন।",
+    footer:"SIH-36 লাইভ প্রোটোটাইপ · গোয়ালিয়র ক্লাস্টার (ম.প্র.) · Open-Meteo, OSRM সড়ক পথ, LightGBM ও ভাষিণী ভয়েস।",
+    perishNote:"পচনশীল ফসল — নির্ধারিত মেয়াদের বেশি অপেক্ষা করার পরামর্শ দেওয়া হয় না।",
+    targetLikely:"সম্ভাবনা বেশি — ৭ দিনের মধ্যে এই দাম অর্জন সম্ভব।",
+    targetPossible:"সম্ভব, তবে নিশ্চিত নয় — LightGBM ৮০% সীমার মধ্যে রয়েছে।",
+    targetUnlikely:"বর্তমান প্রবণতার ভিত্তিতে আগামী ৭ দিনে সম্ভাবনা কম।",
+    netProfit:"নিট মুনাফা", spark:"১৪ দিনের প্রবণতা", vsAvg:"৩০ দিনের গড় তুলনায়", inDays:"৩ দিনে",
+    mspActive:"MSP উইন্ডো সক্রিয়", importPressure:"আমদানি চাপ বৃদ্ধি", noSignal:"কোনো বিশেষ সংকেত নেই",
+    updated:"এইমাত্র আপডেট করা হয়েছে", listen:"শুনুন",
+    rangePrefix:"LightGBM ৮০% পূর্বাভাসের বিস্তার [Q10–Q90]: ",
+    reasonPerishMove:"{m} মান্ডিতে বেশি দাম পাওয়া যাচ্ছে। ৪ দিনের স্থায়িত্ব বিশিষ্ট পচনশীল ফসল — দ্রুত বিক্রির পরামর্শ দেওয়া হচ্ছে।",
+    reasonPerishSell:"{days} দিনের স্বল্প স্থায়িত্ব বিশিষ্ট পচনশীল ফসল। অবিলম্বে বিক্রি করলে ফসল নষ্ট হওয়া ও ক্ষতি এড়ানো যাবে।",
+    reasonSellLow:"{d} মান্ডিতে দামের উপর পতনের চাপ রয়েছে — এখনই বিক্রি করলে ক্ষতি এড়ানো যাবে।",
+    reasonMoveHigh:"{m} মান্ডিতে দাম {pct}% বৃদ্ধি পেয়েছে। সেখানে নিয়ে গেলে বেশি নিট মুনাফা হবে।",
+    reasonWaitSteady:"বাজারের দাম স্থিতিশীল রয়েছে। প্রায় ৫ দিন অপেক্ষা করলে দামের সহায়তা পাওয়া যাবে।",
+    reasonWaitStrong:"শক্তিশালী মূল্যবৃদ্ধির প্রবণতা এবং সরকারি MSP সহায়তা সক্রিয় রয়েছে।",
+    verdictTpl:"{d} মান্ডিতে আজকের পরামর্শ: {v}। {r}",
+    mspTag:"🚨 সরকারি MSP সুরক্ষা সতর্কতা",
+    mspTitle:"মান্ডি দর সরকারি MSP এর নিচে!",
+    mspDesc:"বর্তমান মান্ডি দর সরকারি MSP থেকে ₹{gap}/কুইন্টাল কম। লোকসানে বিক্রি করবেন না! নিকটবর্তী সরকারি কেন্দ্রে বিক্রি করুন।",
+    mspFloor:"সরকারি MSP",
+    mspMandiRate:"স্থানীয় মান্ডি দর",
+    mspLossPerQtl:"ক্ষতি / কুইন্টাল",
+    mspProcHeader:"নিকটবর্তী সরকারি ক্রয় কেন্দ্র",
+    mspPortalBtn:"ই-উপার্জন পোর্টাল",
+    mspGuidelinesBtn:"নির্দেশিকাসমূহ",
+    mspHelplineText:"হেল্পলাইন: ১৮১",
+    offlineTag:"📶 অফলাইন মোড (ক্যাশ)"
+  }
+};
+
+const MANDI_NAMES = {
+  gwalior: {en:"Gwalior", hi:"ग्वालियर", mr:"ग्वाल्हेर", bn:"গোয়ালিয়র"},
+  morena: {en:"Morena", hi:"मुरैना", mr:"मोरेना", bn:"মুরৈনা"},
+  bhind: {en:"Bhind", hi:"भिंड", mr:"भिंड", bn:"ভিন্দ"},
+  shivpuri: {en:"Shivpuri", hi:"शिवपुरी", mr:"शिवपुरी", bn:"শিবপুরী"}
+};
+
+let lang = 'en';
+let whyOpen = false;
+let simActive = false;
+let simState = {};
+let lastVerdictText = "";
+let apiCache = null;
+let cacheLoaded = false;
+
+function populateSelects(){
+  const cropSel = document.getElementById('cropSelect');
+  const distSel = document.getElementById('districtSelect');
+  const prevCrop = cropSel.value || 'onion';
+  cropSel.innerHTML = Object.keys(DATA).map(k=>`<option value="${k}">${DATA[k].label[lang]}</option>`).join('');
+  cropSel.value = prevCrop;
+  const crop = DATA[cropSel.value];
+  const prevDist = distSel.value || 'gwalior';
+  distSel.innerHTML = Object.keys(crop.districts).map(k=>`<option value="${k}">${(MANDI_NAMES[k] && MANDI_NAMES[k][lang]) || crop.districts[k].name[lang]}</option>`).join('');
+  distSel.value = prevDist;
+}
+
+function setLang(l){
+  lang = l;
+  ['EN','HI','MR','BN'].forEach(code=>{
+    const btn = document.getElementById('btn'+code);
+    if(btn) btn.classList.toggle('active', code.toLowerCase()===l);
+  });
+  populateSelects();
+  updateNetworkStatus();
+  render();
+}
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+}
+
+function renderSparkline(points, momentumPct){
+  if(!points || points.length === 0) return;
+  const n = points.length;
+  const min = Math.min(...points), max = Math.max(...points);
+  const range = (max-min) || 1;
+  const w = 340, h = 40, pad=4;
+  const coords = points.map((v,i)=>{
+    const x = (i/(n-1)) * (w-2*pad) + pad;
+    const y = h - pad - ((v-min)/range) * (h-2*pad);
+    return [x,y];
+  });
+  const lineColor = momentumPct >= 0 ? 'var(--teal)' : 'var(--terracotta)';
+  const pathD = coords.map((c,i)=> (i===0?'M':'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
+  const areaD = pathD + ` L${coords[n-1][0].toFixed(1)},${h} L${coords[0][0].toFixed(1)},${h} Z`;
+  const svg = document.getElementById('sparkline');
+  svg.innerHTML = `
+    <path d="${areaD}" fill="${lineColor}" opacity="0.08"></path>
+    <path d="${pathD}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    <circle cx="${coords[n-1][0].toFixed(1)}" cy="${coords[n-1][1].toFixed(1)}" r="3" fill="${lineColor}"></circle>
+  `;
+}
+
+async function render(){
+  const s = STR[lang];
+  const cropKey = document.getElementById('cropSelect').value;
+  const distSel = document.getElementById('districtSelect');
+  const distKey = distSel.value || 'gwalior';
+  
+  const simOverrides = {};
+  if(simActive){
+    if(simState.rain) simOverrides.weather_rain_mm = 25.0;
+    if(simState.spatial) simOverrides.spatial_boost = 18;
+    if(simState.congestion) simOverrides.mandi_traffic = 32;
+    if(simState.msp_drop) simOverrides.msp_drop_sim = true;
+  }
+
+  const simPayload = Object.keys(simOverrides).length > 0 ? simOverrides : null;
+  const cacheKey = `${cropKey}|${distKey}|${JSON.stringify(simPayload)}`;
+  
+  if(apiCache && apiCache[cacheKey]){
+    applyDataToUI(cropKey, distKey, apiCache[cacheKey]);
+    return;
+  }
+
+  applyDataToUI(cropKey, distKey, null);
+
+  if(!cacheLoaded){
+    cacheLoaded = true;
+    await preloadCrop(cropKey);
+    if(apiCache && apiCache[cacheKey]){
+      applyDataToUI(cropKey, distKey, apiCache[cacheKey]);
+      return;
+    }
+  } else {
+    preloadCrop(cropKey);
+  }
+
+  const payload = {
+    crop: cropKey,
+    mandi: distKey,
+    sim_overrides: simPayload
+  };
+
+  try {
+    const res = await fetch('/api/verdict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      const apiData = await res.json();
+      if(!apiCache) apiCache = {};
+      apiCache[cacheKey] = apiData;
+      applyDataToUI(cropKey, distKey, apiData);
+    }
+  } catch(e) {
+    console.warn("Backend API offline, using cached or fallback local intelligence:", e);
+  }
+}
+
+async function preloadCrop(cropKey){
+  if(apiCache && Object.keys(apiCache).some(k => k.startsWith(cropKey + "|"))) return;
+  
+  const districts = Object.keys(DATA[cropKey].districts);
+  const payloads = districts.map(mandi => ({crop: cropKey, mandi, sim_overrides: null}));
+
+  try {
+    const promises = payloads.map(p => fetch('/api/verdict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(p)
+    }).then(r => r.ok ? r.json() : null).catch(() => null));
+    
+    const results = await Promise.all(promises);
+    results.forEach((data, i) => {
+      if(data){
+        const key = `${payloads[i].crop}|${payloads[i].mandi}|null`;
+        if(!apiCache) apiCache = {};
+        apiCache[key] = data;
+      }
+    });
+  } catch(e) {
+    console.warn("Crop preload failed:", e);
+  }
+}
+
+function applyDataToUI(cropKey, distKey, apiData){
+  const s = STR[lang];
+  const crop = DATA[cropKey] || DATA['onion'];
+  const fallbackD = (crop.districts && crop.districts[distKey]) ? crop.districts[distKey] : Object.values(crop.districts)[0];
+  
+  const mandiLocalName = (MANDI_NAMES[distKey] && MANDI_NAMES[distKey][lang]) || fallbackD.name[lang];
+  
+  let price = fallbackD.price;
+  let rangeLow = fallbackD.rangeLow;
+  let rangeHigh = fallbackD.rangeHigh;
+  let cascade = Math.round((fallbackD.momentum + fallbackD.climate + fallbackD.spatial + fallbackD.policy) / 4);
+  let momentumPct = fallbackD.momentumPct;
+  let points = [];
+  let verdictType = 'wait', verdictLabel = s.wait, verdictReason = "";
+  let mandisList = fallbackD.mandis;
+  let factorsList = [];
+  
+  if(apiData){
+    price = apiData.current_price;
+    rangeLow = apiData.range_low;
+    rangeHigh = apiData.range_high;
+    cascade = apiData.cascade_score;
+    points = apiData.price_history_14d || [];
+    momentumPct = apiData.factors.momentum_pct;
+    verdictType = apiData.verdict.type;
+    
+    const verdictTypeToKey = {sell:'sellNow', wait:'wait', move:'move'};
+    const targetMandiKey = apiData.verdict.target_mandi_key;
+    const targetMandiLocalName = targetMandiKey && MANDI_NAMES[targetMandiKey] ? MANDI_NAMES[targetMandiKey][lang] : (apiData.verdict.target_mandi_name || '');
+    verdictLabel = (s[verdictTypeToKey[verdictType]] || apiData.verdict.label_en).replace('{m}', targetMandiLocalName);
+    
+    const reasonKey = apiData.verdict.reason_key;
+    const distLocalName = (MANDI_NAMES[distKey] && MANDI_NAMES[distKey][lang]) || distKey;
+    if(reasonKey && s[reasonKey]){
+      verdictReason = s[reasonKey]
+        .replace('{m}', targetMandiLocalName)
+        .replace('{d}', distLocalName)
+        .replace('{pct}', apiData.factors.spatial_pct || '')
+        .replace('{days}', (crop.shelfDays || 4).toString());
+    } else {
+      verdictReason = apiData.verdict.reason_en;
+    }
+    
+    mandisList = (apiData.mandis || []).map(m => ({
+      key: m.key,
+      name: (MANDI_NAMES[m.key]) || {en:m.name, hi:m.name, mr:m.name, bn:m.name},
+      apmc_name: m.apmc_name || m.name,
+      price: m.price,
+      dist: m.distance_km,
+      routing_source: m.routing_source,
+      data_source: m.data_source || 'Agmarknet'
+    }));
+    
+    factorsList = [
+      {label:s.momentum, val:apiData.factors.momentum, color:'var(--terracotta)', detail:`${apiData.factors.momentum_pct>0?'+':''}${apiData.factors.momentum_pct}% ${s.vsAvg}`},
+      {label:s.climate, val:apiData.factors.climate, color:'var(--gold)', detail:`${apiData.factors.climate_rain}mm / ${apiData.factors.climate_normal}mm`},
+      {label:s.spatial, val:apiData.factors.spatial, color:'var(--teal)', detail:`${apiData.factors.spatial_pct>0?'+':''}${apiData.factors.spatial_pct}% ${s.inDays}`},
+      {label:s.policy, val:apiData.factors.policy, color:'var(--green)', detail:apiData.factors.policy_active ? s.mspActive : s.noSignal},
+    ];
+  } else {
+    let pval = price / (1 + momentumPct/100);
+    for(let i=0; i<14; i++){ pval += (price * (momentumPct/100)/14); points.push(Math.round(pval)); }
+    points[13] = price;
+    
+    const sortedFallback = fallbackD.mandis.slice().sort((a,b)=>b.price-a.price);
+    const bestFallback = sortedFallback[0];
+    const bestFallbackName = bestFallback.name[lang] || bestFallback.name.en;
+    const fallbackDistName = (MANDI_NAMES[distKey] && MANDI_NAMES[distKey][lang]) || fallbackD.name[lang];
+    
+    if(crop.perishable){
+      if(bestFallback.dist > 0 && (bestFallback.price - price >= 30) && bestFallback.dist <= 60){
+        verdictType = 'move';
+        cascade = Math.max(72, Math.min(92, Math.round(50 + (bestFallback.price - price) * 0.8)));
+        verdictLabel = s.move.replace('{m}', bestFallbackName);
+        verdictReason = s.reasonPerishMove.replace('{m}', bestFallbackName);
+      } else {
+        verdictType = 'sell';
+        cascade = Math.max(15, Math.min(28, Math.round(cascade * 0.55)));
+        verdictLabel = s.sellNow;
+        verdictReason = s.reasonPerishSell.replace('{days}', (crop.shelfDays || 4).toString());
+      }
+    } else if(cascade < 40){
+      verdictType = 'sell';
+      verdictLabel = s.sellNow;
+      verdictReason = s.reasonSellLow.replace('{d}', fallbackDistName);
+    } else if(cascade < 66){
+      if(bestFallback.dist > 0 && bestFallback.price > price + 35){
+        verdictType = 'move';
+        cascade = Math.max(72, Math.min(92, cascade + 25));
+        verdictLabel = s.move.replace('{m}', bestFallbackName);
+        const pctDiff = Math.max(1, Math.round(((bestFallback.price - price) / Math.max(1, price)) * 100));
+        verdictReason = s.reasonMoveHigh.replace('{m}', bestFallbackName).replace('{pct}', pctDiff.toString());
+      } else {
+        verdictType = 'wait';
+        verdictLabel = s.wait;
+        verdictReason = s.reasonWaitSteady;
+      }
+    } else {
+      verdictType = 'wait';
+      verdictLabel = s.wait;
+      verdictReason = s.reasonWaitStrong;
+    }
+    
+    factorsList = [
+      {label:s.momentum, val:fallbackD.momentum, color:'var(--terracotta)', detail:`${fallbackD.momentumPct>0?'+':''}${fallbackD.momentumPct}% ${s.vsAvg}`},
+      {label:s.climate, val:fallbackD.climate, color:'var(--gold)', detail:`${fallbackD.climateRain}mm / ${fallbackD.climateNormal}mm`},
+      {label:s.spatial, val:fallbackD.spatial, color:'var(--teal)', detail:`${fallbackD.spatialPct>0?'+':''}${fallbackD.spatialPct}% ${s.inDays}`},
+      {label:s.policy, val:fallbackD.policy, color:'var(--green)', detail:fallbackD.policyType==='msp' ? s.mspActive : s.noSignal},
+    ];
+  }
+
+  document.getElementById('btnFarmerView').textContent = s.farmerView;
+  document.getElementById('btnModelView').textContent = s.modelView;
+  document.getElementById('priceNow').textContent = '₹' + price.toLocaleString('en-IN');
+  document.getElementById('priceUnit').textContent = '/ ' + crop.unit[lang] + ' ' + s.today;
+  document.getElementById('rangeLine').textContent = s.rangePrefix + '₹' + rangeLow.toLocaleString('en-IN') + '–₹' + rangeHigh.toLocaleString('en-IN');
+  document.getElementById('sparkLabel').textContent = s.spark;
+  document.getElementById('lblListen').textContent = s.listen;
+  document.getElementById('whyLabel').textContent = whyOpen ? s.hideWhy : s.seeWhy;
+  document.getElementById('lblBestMandi').textContent = s.best;
+  document.getElementById('lblCalc').textContent = s.calc;
+  document.getElementById('lblQty').textContent = s.qty;
+  document.getElementById('lblFuel').textContent = s.fuel;
+  document.getElementById('lblLabor').textContent = s.labor;
+  document.getElementById('lblTarget').textContent = s.target;
+  document.getElementById('targetPrice').placeholder = s.targetPlaceholder;
+  document.getElementById('btnCheck').textContent = s.check;
+
+  renderSparkline(points, momentumPct);
+
+  const mspBadge = document.getElementById('mspFloorBadge');
+  if(mspBadge){
+    const benchmarkVal = (apiData && apiData.msp_safety_net) ? apiData.msp_safety_net.msp_benchmark : (crop.mspPrice || (cropKey === 'wheat' ? 2275 : 1400));
+    const schemeLabel = (cropKey === 'wheat') ? 'Govt MSP' : 'Govt NAFED Floor';
+    if(price < benchmarkVal){
+      mspBadge.style.background = 'var(--terracotta-light)';
+      mspBadge.style.color = 'var(--terracotta)';
+      mspBadge.style.borderColor = 'var(--terracotta)';
+      mspBadge.textContent = `⚠️ Below ${schemeLabel}: ₹${benchmarkVal.toLocaleString('en-IN')}/qtl`;
+    } else {
+      mspBadge.style.background = 'var(--green-light)';
+      mspBadge.style.color = 'var(--green)';
+      mspBadge.style.borderColor = 'rgba(35,77,53,0.25)';
+      mspBadge.textContent = `🛡️ ${schemeLabel}: ₹${benchmarkVal.toLocaleString('en-IN')}/qtl`;
+    }
+  }
+
+  // Verdict Card
+  const card = document.getElementById('verdictCard');
+  const colors = {
+    sell:{bg:'var(--terracotta-light)', ink:'var(--terracotta)'},
+    wait:{bg:'var(--gold-light)', ink:'var(--gold)'},
+    move:{bg:'var(--teal-light)', ink:'var(--teal)'}
+  }[verdictType] || {bg:'var(--gold-light)', ink:'var(--gold)'};
+
+  card.style.background = colors.bg;
+  document.getElementById('verdictLabel').style.color = colors.ink;
+  document.getElementById('verdictLabel').textContent = verdictLabel;
+  document.getElementById('verdictReason').style.color = colors.ink;
+  document.getElementById('verdictReason').textContent = verdictReason;
+
+  const icon = document.getElementById('verdictIcon');
+  icon.setAttribute('stroke', colors.ink);
+  icon.innerHTML = verdictType==='sell'
+    ? '<polyline points="17 7 7 17"></polyline><polyline points="7 7 7 17 17 17"></polyline>'
+    : (verdictType==='wait' ? '<circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline>' : '<path d="M9 5l7 7-7 7"></path>');
+
+  // Cascade Beam
+  document.getElementById('lblCascade').textContent = s.cascade;
+  document.getElementById('cascadeNum').textContent = cascade + '/100';
+  document.getElementById('beamPointer').style.left = Math.min(100, Math.max(0, cascade)) + '%';
+  document.getElementById('zoneSell').textContent = s.zSell;
+  document.getElementById('zoneWait').textContent = s.zWait;
+  document.getElementById('zoneMove').textContent = s.zMove;
+
+  // Factors Grid
+  document.getElementById('factorsGrid').innerHTML = factorsList.map(f=>`
+    <div class="factor">
+      <div class="flabel">${f.label}</div>
+      <div class="fbar"><div class="fbar-fill" style="width:${f.val}%; background:${f.color};"></div></div>
+      <div class="fdetail">${f.detail}</div>
+    </div>`).join('');
+
+  // Mandi List
+  const sortedMandis = mandisList.slice().sort((a,b)=>b.price-a.price);
+  const bestP = sortedMandis[0] ? sortedMandis[0].price : price;
+  document.getElementById('mandiList').innerHTML = mandisList.map(m=>{
+    const isB = m.price === bestP;
+    const mName = m.name[lang] || m.name.en || m.name;
+    const apmcName = m.apmc_name && m.apmc_name !== mName ? ` (${m.apmc_name})` : '';
+    return `<div class="mandi-row ${isB?'best':''}">
+      <div class="mandi-left">
+        <span class="mandi-name">${mName}${apmcName}${m.dist===0 ? ' · ' + s.here : ''}</span>
+        <span class="mandi-dist">${m.dist} ${s.kmRoad}</span>
+      </div>
+      <div class="mandi-right">
+        <div class="mandi-net">₹${m.price.toLocaleString('en-IN')}</div>
+        ${isB ? `<div class="mandi-tag">${s.best2}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Govt Scheme & MSP Safety Net Evaluation
+  const schemeBanner = document.getElementById('schemeBanner');
+  const mspAlertCard = document.getElementById('mspAlertCard');
+  
+  let isBelowMsp = false;
+  let mspBenchmark = (apiData && apiData.msp_safety_net) ? apiData.msp_safety_net.msp_benchmark : (crop.mspPrice || (cropKey === 'wheat' ? 2275 : (cropKey === 'onion' ? 1400 : 1200)));
+  let mspGap = 0;
+  let procCenter = { name: "FCI / MPSCSC Procurement Depot", distance_km: 4.2, address: "Lashkar Mandi Center" };
+
+  if(apiData && apiData.msp_safety_net){
+    isBelowMsp = apiData.msp_safety_net.is_below_msp;
+    mspBenchmark = apiData.msp_safety_net.msp_benchmark;
+    mspGap = apiData.msp_safety_net.msp_gap;
+    if(apiData.msp_safety_net.procurement_center){
+      procCenter = apiData.msp_safety_net.procurement_center;
+    }
+  } else if(price < mspBenchmark && mspBenchmark > 0){
+    isBelowMsp = true;
+    mspGap = mspBenchmark - price;
+  }
+
+  // Update MSP Warning Card
+  if(isBelowMsp && mspBenchmark > 0){
+    mspAlertCard.classList.add('show');
+    schemeBanner.classList.remove('show');
+    
+    document.getElementById('mspTag').textContent = (cropKey === 'wheat') ? s.mspTag : "🚨 Govt Floor / NAFED Alert";
+    document.getElementById('mspTitle').textContent = (cropKey === 'wheat') ? s.mspTitle : "Selling Below Govt Floor Rate!";
+    document.getElementById('mspDesc').textContent = s.mspDesc.replace('{gap}', mspGap.toString());
+    document.getElementById('lblMspFloor').textContent = (cropKey === 'wheat') ? s.mspFloor : "Govt Floor";
+    document.getElementById('mspValFloor').textContent = `₹${mspBenchmark.toLocaleString('en-IN')}`;
+    document.getElementById('lblMspMandi').textContent = s.mspMandiRate;
+    document.getElementById('mspValMandi').textContent = `₹${price.toLocaleString('en-IN')}`;
+    document.getElementById('lblMspGap').textContent = s.mspLossPerQtl;
+    document.getElementById('mspValGap').textContent = `-₹${mspGap.toLocaleString('en-IN')}`;
+    
+    document.getElementById('lblProcCenter').textContent = s.mspProcHeader;
+    document.getElementById('mspCenterName').textContent = procCenter.name;
+    document.getElementById('mspCenterDist').textContent = `${procCenter.distance_km} km away · ${procCenter.address || 'APMC Procurement Depot'}`;
+    
+    document.getElementById('btnMspRegister').textContent = (cropKey === 'wheat') ? s.mspPortalBtn : "NAFED Portal";
+    if(cropKey !== 'wheat') document.getElementById('btnMspRegister').href = "https://nafed-india.com";
+    else document.getElementById('btnMspRegister').href = "https://mpeuparjan.nic.in";
+    
+    document.getElementById('btnMspGuide').textContent = s.mspGuidelinesBtn;
+    document.getElementById('mspHelpline').textContent = s.mspHelplineText;
+  } else {
+    mspAlertCard.classList.remove('show');
+    // Normal Scheme Banner
+    const isMspActive = (apiData && apiData.factors) ? apiData.factors.policy_active : (fallbackD.policyType==='msp');
+    if(isMspActive && cropKey === 'wheat'){
+      schemeBanner.classList.add('show');
+      schemeBanner.innerHTML = `<span>&#9432;</span><span>${s.scheme}</span>`;
+    } else {
+      schemeBanner.classList.remove('show');
+    }
+  }
+
+  document.getElementById('footerNote').textContent = s.footer;
+  document.getElementById('updatedLine').textContent = s.updated;
+
+  window._currentD = {
+    price: price,
+    rangeLow: rangeLow,
+    rangeHigh: rangeHigh,
+    mandis: mandisList
+  };
+
+  renderCalc();
+  renderModelView(cropKey, distKey, apiData, mandiLocalName);
+  
+  if(apiData && apiData.congestion){
+    updateCongestionUI(apiData.congestion);
+  }
+}
+
+function updateCongestionUI(congestionData){
+  if(!congestionData) return;
+  const inflow = congestionData.expected_inflow !== undefined ? congestionData.expected_inflow : (congestionData.farmers_count || 0);
+  const rawViews = congestionData.raw_views || 0;
+  const rawRoutes = congestionData.raw_route_intents || 0;
+  const threshold = congestionData.threshold || 25;
+  const isHigh = congestionData.is_congested || (inflow >= threshold);
+  
+  const pct = Math.min(100, Math.round((inflow / threshold) * 100));
+  
+  document.getElementById('congestVal').textContent = `${inflow} / hr (Limit: ${threshold})`;
+  document.getElementById('congestBreakdown').textContent = `${rawViews} views (×0.3) + ${rawRoutes} routes (×0.85)`;
+  document.getElementById('congestBar').style.width = pct + '%';
+  document.getElementById('congestBar').style.background = isHigh ? 'var(--terracotta)' : 'var(--teal)';
+  document.getElementById('congestNote').textContent = isHigh
+    ? `⚠️ Inflow threshold reached (≥${threshold} expected arrivals/hr) — Safeguard triggered: advisory confidence reduced to prevent local mandi glut.`
+    : `✅ Within safe limits (${pct}% of capacity) — no recommendation suppression active.`;
+}
+
+function renderCalc(){
+  const d = window._currentD;
+  if(!d) return;
+  const s = STR[lang];
+  const cropKey = document.getElementById('cropSelect').value;
+  const distKey = document.getElementById('districtSelect').value;
+  const qty = parseFloat(document.getElementById('qty').value) || 0;
+  const fuelRate = parseFloat(document.getElementById('fuel').value) || 0;
+  const labor = parseFloat(document.getElementById('labor').value) || 0;
+
+  const results = d.mandis.map(m=>{
+    const transport = m.dist * fuelRate * 2; // Round trip
+    const net = (m.price * qty) - transport - labor;
+    const mName = m.name[lang] || m.name.en || m.name;
+    return {name: mName, net, dist: m.dist};
+  }).sort((a,b)=>b.net-a.net);
+
+  const best = results[0];
+  if(best){
+    document.getElementById('calcResult').innerHTML = `${s.netProfit} <b>${best.name} (${best.dist} ${s.kmRoad})</b>: <b>₹${Math.round(best.net).toLocaleString('en-IN')}</b>`;
+  }
+
+  // Debounced telemetry logging for route queries
+  clearTimeout(window._calcProfitTimer);
+  window._calcProfitTimer = setTimeout(() => {
+    fetch('/api/calculate-profit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        origin_mandi: distKey,
+        crop: cropKey,
+        quantity_quintals: qty,
+        fuel_rate_per_km: fuelRate,
+        labor_flat: labor
+      })
+    })
+    .then(res => res.json())
+    .catch(()=>{});
+  }, 500);
+}
+
+function checkTarget(){
+  const d = window._currentD;
+  const s = STR[lang];
+  const target = parseFloat(document.getElementById('targetPrice').value);
+  const box = document.getElementById('targetAnswer');
+  if(!target || !d){ return; }
+
+  let msg, bg, ink;
+  if(target <= d.rangeLow){ msg = s.targetLikely; bg='var(--teal-light)'; ink='var(--teal)'; }
+  else if(target <= d.rangeHigh){ msg = s.targetPossible; bg='var(--gold-light)'; ink='var(--gold)'; }
+  else { msg = s.targetUnlikely; bg='var(--terracotta-light)'; ink='var(--terracotta)'; }
+
+  box.style.background = bg; box.style.color = ink;
+  box.textContent = msg;
+  box.classList.add('show');
+}
+
+function renderModelView(cropKey, distKey, apiData, mandiLocalName){
+  // Waterfall SHAP chart
+  const wf = document.getElementById('waterfallChart');
+  let contribs = [];
+  if(apiData && apiData.shap_waterfall && apiData.shap_waterfall.length > 0){
+    contribs = apiData.shap_waterfall;
+  } else {
+    contribs = [
+      {label: "Baseline Average", val: 2200, color: "var(--ink-faint)"},
+      {label: "Momentum Trend", val: 35, color: "var(--teal)"},
+      {label: "Climate & Weather", val: 15, color: "var(--gold)"},
+      {label: "Spatial Neighbor Flow", val: 20, color: "var(--teal)"},
+      {label: "Policy / MSP Floor", val: 50, color: "var(--green)"},
+      {label: "Predicted Target", val: 2320, color: "var(--green)"}
+    ];
+  }
+  
+  const baseline = contribs[0].val;
+  const finalVal = contribs[contribs.length - 1].val;
+  const maxAbs = Math.max(baseline, finalVal, ...contribs.map(c=>Math.abs(c.val)));
+  
+  let bars = '';
+  contribs.forEach((c, idx) => {
+    const isStart = idx === 0;
+    const isEnd = idx === contribs.length - 1;
+    const h = Math.max(8, (Math.abs(c.val)/maxAbs)*80);
+    const valStr = isStart || isEnd ? `₹${c.val.toLocaleString('en-IN')}` : `${c.val>=0?'+':''}${c.val}`;
+    bars += `<div class="wf-bar-wrap">
+      <div class="wf-val" style="color:${isStart || isEnd ? 'inherit' : (c.val>=0?'var(--teal)':'var(--terracotta)')};">${valStr}</div>
+      <div class="wf-bar" style="height:${h}px; background:${c.color};"></div>
+      <div class="wf-label">${c.label}</div>
+    </div>`;
+  });
+  wf.innerHTML = bars;
+
+  // Real 14d Backtest chart from True LightGBM Walk-Forward Rolling-Origin Evaluation
+  if(apiData && apiData.backtest && apiData.backtest.actual_14d && apiData.backtest.predicted_14d){
+    const actual = apiData.backtest.actual_14d;
+    const predicted = apiData.backtest.predicted_14d;
+    const n = actual.length;
+    const allVals = actual.concat(predicted);
+    const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+    const rangeV = (maxV-minV)||1;
+    const w=340,h=70,pad=6;
+    const toXY = (arr,i)=>{
+      const x = (i/(n-1))*(w-2*pad)+pad;
+      const y = h-pad-((arr[i]-minV)/rangeV)*(h-2*pad);
+      return [x,y];
+    };
+    const pathFor = (arr)=> arr.map((v,i)=>{const [x,y]=toXY(arr,i); return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+    document.getElementById('backtestChart').innerHTML = `
+      <path d="${pathFor(actual)}" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="${pathFor(predicted)}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round"></path>
+    `;
+    
+    const mdaPct = apiData.backtest.mda_pct;
+    const calibRate = apiData.backtest.calibration_80pct_hit_rate;
+    document.getElementById('mdaNote').textContent = `Walk-forward validation on ${mandiLocalName || distKey} — ${mdaPct}% Directional Accuracy (MDA).`;
+    if(document.getElementById('mdaVal')) document.getElementById('mdaVal').textContent = `${mdaPct}%`;
+    if(document.getElementById('calibVal')) document.getElementById('calibVal').textContent = `${calibRate}%`;
+  }
+
+  // Reversal log
+  document.getElementById('reversalLog').innerHTML = `
+    <div class="log-item"><span class="log-dot" style="background:var(--teal);"></span><span class="log-text"><b>Today:</b> LightGBM Quantile Pinball loss model calibrated for ${mandiLocalName || distKey}.</span></div>
+    <div class="log-item"><span class="log-dot" style="background:var(--ink-faint);"></span><span class="log-text"><b>3 days ago:</b> Spatial ripple from neighboring mandis incorporated into lag matrix.</span></div>
+  `;
+}
+
+function setView(v){
+  document.getElementById('btnFarmerView').classList.toggle('active', v==='farmer');
+  document.getElementById('btnModelView').classList.toggle('active', v==='model');
+  document.getElementById('farmerPad').classList.toggle('hide', v!=='farmer');
+  document.getElementById('modelPad').classList.toggle('show', v==='model');
+}
+
+function toggleWhy(){
+  whyOpen = !whyOpen;
+  document.getElementById('factorsGrid').classList.toggle('show', whyOpen);
+  document.getElementById('whyToggle').classList.toggle('open', whyOpen);
+  document.getElementById('whyLabel').textContent = whyOpen ? STR[lang].hideWhy : STR[lang].seeWhy;
+}
+
+function toggleSim(){
+  const panel = document.getElementById('simPanel');
+  panel.classList.toggle('open');
+}
+
+function applySim(type){
+  simActive = true;
+  simState[type] = true;
+  apiCache = {}; // Invalidate cache
+  render();
+}
+
+async function resetSim(){
+  simActive = false;
+  simState = {};
+  apiCache = {};
+  
+  try {
+    await fetch('/api/reset-traffic', { method: 'POST' });
+  } catch(e) {
+    console.warn("Could not reset backend traffic tracker:", e);
+  }
+  
+  updateCongestionUI({
+    expected_inflow: 0,
+    raw_views: 0,
+    raw_route_intents: 0,
+    threshold: 25,
+    is_congested: false
+  });
+  
+  await render();
+}
+
+function speakVerdict(){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(lastVerdictText || "আজকের সিদ্ধান্ত");
+    utter.lang = (lang==='hi') ? 'hi-IN' : (lang==='mr' ? 'mr-IN' : (lang==='bn' ? 'bn-IN' : 'en-IN'));
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  } else {
+    alert("Speech Synthesis not supported in this browser.");
+  }
+}
+
+// Network Status Management (Online / Offline PWA indicator)
+function updateNetworkStatus(){
+  const tag = document.getElementById('networkStatusTag');
+  const pulse = document.getElementById('networkPulse');
+  const lbl = document.getElementById('liveLabel');
+  const s = STR[lang];
+  
+  if(navigator.onLine){
+    if(tag) tag.style.color = 'rgba(255,255,255,0.75)';
+    if(pulse) { pulse.style.background = '#7FE3A6'; pulse.classList.add('pulse'); }
+    if(lbl) lbl.textContent = s.live;
+  } else {
+    if(tag) tag.style.color = '#F3C363';
+    if(pulse) { pulse.style.background = '#F3C363'; pulse.classList.remove('pulse'); }
+    if(lbl) lbl.textContent = s.offlineTag || '📶 Offline (Cached)';
+  }
+}
+
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+
+// Service Worker Registration for PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => {
+        console.log('[PWA] Service Worker active with scope:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('[PWA] Service Worker registration skipped:', err);
+      });
+  });
+}
+
+// Initial setup
+populateSelects();
+updateNetworkStatus();
+render();
+</script>
+</body>
+</html>

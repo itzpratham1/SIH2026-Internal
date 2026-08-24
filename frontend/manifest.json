@@ -1,0 +1,20 @@
+{
+  "name": "Kisan Price Intelligence & Mandi Advisory",
+  "short_name": "KrishiBhav",
+  "description": "Offline-first agricultural price forecasting, cascade risk evaluation, and MSP safety net intelligence for farmers (SIH-36).",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F6F1",
+  "theme_color": "#234D35",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["agriculture", "productivity", "utilities"],
+  "lang": "hi-IN"
+}
