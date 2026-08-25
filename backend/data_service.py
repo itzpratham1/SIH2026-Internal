@@ -82,7 +82,7 @@ CROP_METADATA = {
         "has_futures": False, # Perishable / non-deliverable
         "msp_price": 0,
         "msp_active": False,
-        "base_price": 2500,  # Live Agmarknet MP modal price
+        "base_price": 2300,  # Live Agmarknet MP modal price
         "growth_stage": "Rabi Harvesting",
         "normal_rainfall_mm": 10.0
     },

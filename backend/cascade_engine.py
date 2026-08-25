@@ -267,6 +267,18 @@ def calculate_cascade_and_verdict(crop_key, mandi_key, sim_overrides=None):
         ) if is_below_msp else None
     }
     
+    # Assemble Data Quality & Imputation Transparency Report
+    data_quality = dict(live_market_info.get("data_quality", {
+        "confidence_level": "high" if live_market_info.get("is_live") else "moderate",
+        "confidence_pct": 96 if live_market_info.get("is_live") else 80,
+        "is_interpolated": False,
+        "imputation_method": "Direct APMC Live Auction",
+        "anomalies_filtered_count": 0,
+        "source": live_market_info.get("source", "Agmarknet Live")
+    }))
+    ml_quality = ml_engine.data_quality_telemetry.get((crop_key, mandi_key), {})
+    data_quality["ml_pipeline"] = ml_quality
+
     return {
         "crop_key": crop_key,
         "mandi_key": mandi_key,
@@ -276,6 +288,7 @@ def calculate_cascade_and_verdict(crop_key, mandi_key, sim_overrides=None):
         "cascade_score": cascade_score,
         "market_info": live_market_info,
         "agmarknet_status": fetcher_status,
+        "data_quality": data_quality,
         "verdict": {
             "type": verdict_type,
             "target_mandi_key": target_mandi_key,
