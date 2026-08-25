@@ -64,12 +64,12 @@ class CropPriceMLEngine:
         """Engineers a clean tabular feature matrix from authentic historical series with Spline & Isolation Forest."""
         df = load_agmarknet_historical_series(crop_key, mandi_key, days=180)
         
-        # 1. Missing Data Gap-Filling using Spline Interpolation
+        # 1. Missing Data Gap-Filling: Causal Forward Fill & Backward Fill on cold start (Eliminates Spline Lookahead Leakage)
         if df["modal_price"].isna().any() or (df["modal_price"] <= 0).any():
             df["modal_price"] = df["modal_price"].replace(0, np.nan)
-            df["modal_price"] = df["modal_price"].interpolate(method="cubic").bfill().ffill()
+            df["modal_price"] = df["modal_price"].ffill().bfill()
 
-        # 2. Bad/Suspicious Entries: Isolation Forest Anomaly Detection to filter dirty rows before training
+        # 2. Bad/Suspicious Entries: Isolation Forest Anomaly Detection
         anomalies_filtered = 0
         try:
             from sklearn.ensemble import IsolationForest
@@ -78,18 +78,17 @@ class CropPriceMLEngine:
             iso = IsolationForest(contamination=0.03, random_state=42)
             preds = iso.fit_predict(iso_features)
             
-            # Keep clean rows (pred == 1) or smooth out extreme isolated single-day outliers via spline
+            # Smooth out extreme isolated single-day outliers causally using historical forward fill (Zero Future Leakage)
             is_outlier = (preds == -1)
             anomalies_filtered = int(np.sum(is_outlier))
             if anomalies_filtered > 0:
-                # Replace detected dirty anomaly spikes with spline interpolation from surrounding clean days
                 df.loc[is_outlier, "modal_price"] = np.nan
-                df["modal_price"] = df["modal_price"].interpolate(method="cubic").bfill().ffill()
+                df["modal_price"] = df["modal_price"].ffill().bfill()
         except Exception:
             pass
 
         self.data_quality_telemetry[(crop_key, mandi_key)] = {
-            "imputation_method": "Multi-Mandi APMC Network Stream",
+            "imputation_method": "Multi-Mandi APMC Network Stream (Causal ffill)",
             "isolation_forest_anomalies_filtered": anomalies_filtered,
             "contamination_param": "3.0%",
             "detector": "IsolationForest(contamination=0.03, random_state=42)"
@@ -105,25 +104,29 @@ class CropPriceMLEngine:
         neighbor_key = neighbor_map.get(mandi_key, "morena")
         df_neighbor = load_agmarknet_historical_series(crop_key, neighbor_key, days=180)
         if df_neighbor["modal_price"].isna().any():
-            df_neighbor["modal_price"] = df_neighbor["modal_price"].interpolate(method="cubic").bfill().ffill()
+            df_neighbor["modal_price"] = df_neighbor["modal_price"].ffill().bfill()
         
-        # Target variable is modal price
+        # Target variable is modal price at day t
         df["price"] = df["modal_price"]
         
-        # Momentum & Lag Features
+        # Strictly Causal Momentum & Lag Features (Only using info prior to day t)
         df["lag_1"] = df["price"].shift(1)
         df["lag_2"] = df["price"].shift(2)
         df["lag_7"] = df["price"].shift(7)
         df["lag_14"] = df["price"].shift(14)
-        df["ma_3"] = df["price"].rolling(3).mean()
-        df["ma_7"] = df["price"].rolling(7).mean()
-        df["ma_30"] = df["price"].rolling(30).mean()
-        df["momentum_3d"] = ((df["price"] - df["ma_3"]) / df["ma_3"]) * 100.0
-        df["momentum_pct"] = ((df["price"] - df["ma_30"]) / df["ma_30"]) * 100.0
         
-        # Climate Anomaly Feature (Standardized rainfall relative to crop normal)
+        # Moving averages computed strictly on lag_1 (past prices) to eliminate target leakage
+        df["ma_3"] = df["lag_1"].rolling(3, min_periods=1).mean()
+        df["ma_7"] = df["lag_1"].rolling(7, min_periods=1).mean()
+        df["ma_30"] = df["lag_1"].rolling(30, min_periods=1).mean()
+        
+        # Momentum relative to past moving averages
+        df["momentum_3d"] = ((df["lag_1"] - df["ma_3"]) / df["ma_3"].replace(0, np.nan)).fillna(0.0) * 100.0
+        df["momentum_pct"] = ((df["lag_1"] - df["ma_30"]) / df["ma_30"].replace(0, np.nan)).fillna(0.0) * 100.0
+        
+        # Climate Anomaly Feature (Standardized lagged rainfall relative to crop normal)
         norm_rain = max(1.0, CROP_METADATA[crop_key]["normal_rainfall_mm"])
-        df["climate_anomaly"] = (df["rainfall_mm"] - norm_rain) / (norm_rain * 0.8 + 1.0)
+        df["climate_anomaly"] = (df["rainfall_mm"].shift(1).fillna(0.0) - norm_rain) / (norm_rain * 0.8 + 1.0)
         
         # Spatial Spillover (Neighbor Mandi 1-day lag price)
         df["neighbor_price_lead"] = df_neighbor["modal_price"].shift(1)
@@ -132,9 +135,9 @@ class CropPriceMLEngine:
         df["msp_flag"] = 1.0 if CROP_METADATA[crop_key]["msp_active"] else 0.0
         df["import_pressure"] = 0.18 if crop_key == "wheat" else 0.45
         
-        # Futures Basis (NCDEX proxy basis for storable commodities)
+        # Futures Basis (NCDEX proxy basis computed strictly on past lagged price)
         if CROP_METADATA[crop_key]["has_futures"]:
-            df["futures_basis"] = df["price"] * 0.025 + (df["price"] - df["ma_7"]) * 0.15
+            df["futures_basis"] = df["lag_1"] * 0.025 + (df["lag_1"] - df["ma_7"]) * 0.15
         else:
             df["futures_basis"] = 0.0
             
@@ -225,11 +228,8 @@ class CropPriceMLEngine:
             q50_val = float(step_models[0.50].predict(X_te)[0])
             q90_val = float(step_models[0.90].predict(X_te)[0])
             
-            # Calibrate quantile envelope against historical residual volatility
-            recent_vol = np.std(y_tr.tail(21).values) if len(y_tr) >= 21 else 30.0
-            margin = max(25.0, recent_vol * 1.8)
-            q10_val = min(q10_val, q50_val - margin)
-            q90_val = max(q90_val, q50_val + margin)
+            # Monotonic quantile rearrangement (Q10 <= Q50 <= Q90) without artificial envelope inflation
+            q10_val, q50_val, q90_val = sorted([q10_val, q50_val, q90_val])
             
             actual_prices.append(round(y_actual))
             pred_q10.append(round(q10_val))
@@ -281,10 +281,8 @@ class CropPriceMLEngine:
         q50 = float(entry["models"][0.50].predict(X_input)[0])
         q90 = float(entry["models"][0.90].predict(X_input)[0])
         
-        # Ensure monotonic quantile consistency with realistic safety margins
-        vol_margin = max(30.0, float(entry["current_price"]) * 0.035)
-        q10 = min(q10, q50 - vol_margin)
-        q90 = max(q90, q50 + vol_margin)
+        # Ensure monotonic quantile consistency (Q10 <= Q50 <= Q90)
+        q10, q50, q90 = sorted([q10, q50, q90])
         
         current_p = round(entry["current_price"])
         return {
