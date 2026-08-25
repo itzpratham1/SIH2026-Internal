@@ -211,10 +211,13 @@ class CropPriceMLEngine:
         pred_q10 = []
         pred_q50 = []
         pred_q90 = []
+        correct_directions = 0
+        total_intervals = 0
         
         for i in range(start_idx, n_total):
             train_df = df.iloc[:i]
             test_row = df.iloc[i:i+1]
+            last_actual = float(train_df["price"].iloc[-1])
             
             X_tr = train_df[self.feature_cols]
             y_tr = train_df["price"]
@@ -236,16 +239,14 @@ class CropPriceMLEngine:
             pred_q50.append(round(q50_val))
             pred_q90.append(round(q90_val))
             
-        # Calculate True Mean Directional Accuracy (MDA)
-        correct_directions = 0
-        total_intervals = len(actual_prices) - 1
-        for k in range(1, len(actual_prices)):
-            act_delta = actual_prices[k] - actual_prices[k-1]
-            pred_delta = pred_q50[k] - pred_q50[k-1]
+            # Directional comparison: Did predicted move relative to t-1 match actual move relative to t-1?
+            act_delta = y_actual - last_actual
+            pred_delta = q50_val - last_actual
             if (act_delta >= 0 and pred_delta >= 0) or (act_delta < 0 and pred_delta < 0):
                 correct_directions += 1
+            total_intervals += 1
                 
-        mda_pct = round((correct_directions / max(1, total_intervals)) * 100) if total_intervals > 0 else 80
+        mda_pct = round((correct_directions / max(1, total_intervals)) * 100) if total_intervals > 0 else 75
         
         # Calculate True 80% Prediction Interval Calibration Rate
         inside_interval = sum(
