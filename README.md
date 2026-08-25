@@ -6,75 +6,72 @@ An intelligent, ML-powered decision support system designed to help farmers opti
 
 ---
 
-## 🚀 Quick Start (Local Setup)
+## ⚡ 1-Click Quick Start (Easiest Way)
 
-### 1. Prerequisites
-- **Python 3.10+**
-- **Git**
-
----
-
-### 2. Clone the Repository
-```bash
-git clone <repo-url>
-cd SIH
-```
-
----
-
-### 3. Create & Activate Virtual Environment
-- **Windows (Command Prompt / PowerShell):**
-  ```powershell
-  python -m venv venv
-  .\venv\Scripts\activate
-  ```
-- **macOS / Linux:**
+### 📥 Step 1: Download the Project
+- **Option A (Download ZIP):** Click the green **Code** button on GitHub $\rightarrow$ **[Download ZIP]**, then extract the ZIP file.
+- **Option B (Git Clone):**
   ```bash
-  python3 -m venv venv
-  source venv/bin/activate
+  git clone https://github.com/itzpratham1/SIH2026.git
+  cd SIH2026
   ```
 
 ---
 
-### 4. Install Dependencies
-```bash
-pip install -r requirements.txt
+### 🚀 Step 2: Run in One Click
+
+#### 🖥️ Windows:
+Simply **double-click** [`start.bat`](file:///d:/SIH/start.bat) (or run in CMD/PowerShell):
+```bat
+start.bat
 ```
+*(This automatically creates the virtual environment, installs all packages, configures `.env`, starts the server, and opens your browser!)*
+
+#### 🍎 macOS / Linux:
+Open Terminal in the project folder and run:
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+#### 🐳 Docker (Optional):
+```bash
+docker compose up
+```
+
+The web dashboard will automatically open at **`http://localhost:5000`** (or `http://127.0.0.1:5000`).
 
 ---
 
-### 5. Configure Environment Variables *(Optional)*
-Copy `.env.example` to `.env`:
-- **Windows:**
-  ```powershell
-  copy .env.example .env
-  ```
-- **macOS / Linux:**
-  ```bash
-  cp .env.example .env
-  ```
+## 🛠️ Manual Setup (Step-by-Step)
 
-> **Note:** The platform functions out-of-the-box with built-in fallback and simulation models. To enable real-time Agmarknet mandi data sync, add your free `DATAGOV_API_KEY` from [data.gov.in](https://data.gov.in) into `.env`.
+If you prefer setting up manually step-by-step:
 
----
-
-### 6. Run the Application
-
-#### Option A: One-Click Launcher (Recommended)
-Automatically starts the Flask server and opens the browser interface at `http://127.0.0.1:5000`:
-```bash
-python run_server.py
-```
-
-#### Option B: Standard Flask Command
-```bash
-python -m backend.app
-```
-
-#### Option C: Production Gunicorn (Linux/macOS)
-```bash
-gunicorn backend.app:app -b 0.0.0.0:5000 --threads 4
-```
+1. **Prerequisites:** Python 3.10+ installed.
+2. **Create & Activate Virtual Environment:**
+   - *Windows:*
+     ```powershell
+     python -m venv venv
+     .\venv\Scripts\activate
+     ```
+   - *macOS / Linux:*
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+3. **Install Requirements:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Environment File (Optional):**
+   ```bash
+   copy .env.example .env    # Windows
+   cp .env.example .env      # macOS/Linux
+   ```
+5. **Start Application:**
+   ```bash
+   python run_server.py
+   ```
 
 ---
 
@@ -103,8 +100,12 @@ SIH/
 │   ├── sw.js                 # Service Worker (Offline caching & PWA)
 │   ├── manifest.json         # Web App Manifest
 │   └── icon.svg              # App Icon
-├── run_server.py             # One-click launch script
-├── test_engine.py            # Automated test suite
+├── start.bat                 # 1-Click launcher for Windows
+├── start.sh                  # 1-Click launcher for macOS / Linux
+├── Dockerfile                # Docker container configuration
+├── docker-compose.yml        # Docker Compose configuration
+├── run_server.py             # Smart Python server launcher & browser opener
+├── test_engine.py            # Automated test & verification suite
 ├── requirements.txt          # Python dependencies
 ├── .env.example              # Environment variables template
 └── README.md                 # Project documentation

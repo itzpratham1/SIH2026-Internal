@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .system_generated/
 scratch/
+venv/
+.venv/
+env/
+
