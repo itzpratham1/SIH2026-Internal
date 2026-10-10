@@ -55,8 +55,8 @@ SIH/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/itzpratham1/SIH2026.git
-   cd SIH2026
+   git clone https://github.com/itzpratham1/SIH2026-Internal.git
+   cd SIH2026-Internal
    ```
 
 2. **Create and activate a virtual environment**
