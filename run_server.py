@@ -15,17 +15,7 @@ import time
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT_DIR)
 
-# 1. Ensure .env exists
-env_path = os.path.join(ROOT_DIR, ".env")
-env_example_path = os.path.join(ROOT_DIR, ".env.example")
-if not os.path.exists(env_path) and os.path.exists(env_example_path):
-    try:
-        shutil.copy(env_example_path, env_path)
-        print("[*] Created .env configuration from .env.example")
-    except Exception:
-        pass
-
-# 2. Check for critical dependencies
+# 1. Check for critical dependencies
 REQUIRED_PACKAGES = ["flask", "flask_cors", "pandas", "numpy", "scipy", "sklearn", "lightgbm"]
 missing = []
 for pkg in REQUIRED_PACKAGES:
@@ -68,12 +58,11 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
     print("\n" + "=" * 68)
-    print("   🌾 SMART INDIA HACKATHON 2026 -- SIH-36: CROP PRICE INTELLIGENCE")
-    print("      Target Region: Gwalior Cluster (Wheat, Onion, Tomato)")
+    print("   SMART INDIA HACKATHON 2026 -- SIH-36: CROP PRICE INTELLIGENCE")
+    print("   Target Region: Gwalior Cluster (Wheat, Onion, Tomato)")
     print("=" * 68)
-    print(f"\n  🚀 Local Interface:   http://127.0.0.1:{port}")
-    print(f"  🌐 Network Access:    http://{local_ip}:{port} (Same WiFi / Phone)")
-    print(f"  📡 Agmarknet Status:  Live + Historical Fallback Engine Active")
+    print(f"\n  Dashboard URL:   http://127.0.0.1:{port}")
+    print(f"  Network Access:  http://{local_ip}:{port}")
     print("=" * 68 + "\n")
     print("Press Ctrl+C in this terminal to stop the server at any time.\n")
 
@@ -81,4 +70,5 @@ if __name__ == "__main__":
     threading.Thread(target=open_browser, args=(port,), daemon=True).start()
 
     app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+
 

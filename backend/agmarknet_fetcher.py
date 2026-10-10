@@ -1,6 +1,6 @@
 """
-Real Agmarknet Price Fetcher using data.gov.in Open Government API (SIH-36)
-Fetches authentic daily modal prices, arrivals, min/max prices from regulated mandis.
+Agmarknet Price Fetcher using data.gov.in Open Government API (SIH-36)
+Fetches daily modal prices, arrivals, min/max prices from regulated mandis.
 """
 
 import os
@@ -59,8 +59,8 @@ CROP_COMMODITY_MAP = {
     "tomato": "Tomato"
 }
 
-# Baseline authentic prices for MP cluster (used as fallback anchor if API is offline)
-AUTHENTIC_BASE_PRICES = {
+# Baseline prices for MP cluster (used as fallback anchor if API is offline)
+DEFAULT_BASE_PRICES = {
     "wheat": {"gwalior": 2625.0, "morena": 2622.0, "bhind": 2515.0, "shivpuri": 2525.0},
     "onion": {"gwalior": 2300.0, "morena": 2350.0, "bhind": 2380.0, "shivpuri": 2200.0},
     "tomato": {"gwalior": 1650.0, "morena": 1900.0, "bhind": 1680.0, "shivpuri": 2000.0}
@@ -115,13 +115,15 @@ class AgmarknetFetcher:
         Caches results in memory & disk with TTL.
         """
         now = time.time()
-        if not force_refresh and self._cache.get("records") and (now - self._cache_timestamp < CACHE_TTL_SECONDS):
-            return self._cache["records"]
+        if not force_refresh and (now - self._cache_timestamp < CACHE_TTL_SECONDS) and ("records" in self._cache):
+            return self._cache.get("records", [])
 
         if not self.api_key:
             print("[Agmarknet] No DATAGOV_API_KEY configured in environment.")
             self._last_fetch_status["error"] = "DATAGOV_API_KEY missing"
-            return self._cache.get("records", [])
+            self._cache_timestamp = now
+            self._cache["records"] = []
+            return []
 
         url = self._build_url()
         params = {
@@ -161,6 +163,9 @@ class AgmarknetFetcher:
                     self._last_fetch_status["error"] = str(e)
                 time.sleep(RETRY_DELAY)
 
+        self._cache_timestamp = now
+        if "records" not in self._cache:
+            self._cache["records"] = []
         return self._cache.get("records", [])
 
     def _filter_anomalies_isolation_forest(self, records: List[Dict]) -> (List[Dict], int):
@@ -323,7 +328,7 @@ class AgmarknetFetcher:
                         "imputation_method": "Direct APMC Live Auction",
                         "anomalies_filtered_count": filtered_outliers,
                         "source": "data.gov.in Live Agmarknet APMC Auction",
-                        "notice": f"Authentic live auction transaction directly from {best_match.get('market', mandi_meta['primary_market'])}."
+                        "notice": f"Live auction transaction from {best_match.get('market', mandi_meta['primary_market'])}."
                     }
                 }
 
@@ -364,8 +369,8 @@ class AgmarknetFetcher:
                     }
                 }
 
-        # Fallback to authentic baseline for Madhya Pradesh cluster (Offline/Pre-auction)
-        fallback_p = AUTHENTIC_BASE_PRICES.get(crop_key, {}).get(mandi_key, 2300.0)
+        # Fallback baseline for Madhya Pradesh cluster (Offline/Pre-auction)
+        fallback_p = DEFAULT_BASE_PRICES.get(crop_key, {}).get(mandi_key, 2300.0)
         return {
             "modal_price": fallback_p,
             "min_price": round(fallback_p * 0.95, 1),
@@ -414,8 +419,8 @@ def load_agmarknet_historical_series(
     days: int = 160
 ) -> pd.DataFrame:
     """
-    Generates a 160-day authentic Agmarknet daily price & arrival time-series
-    anchored directly to today's live modal price from data.gov.in.
+    Generates a 160-day daily price and arrival time-series
+    anchored to today's modal price from data.gov.in.
     """
     from backend.data_service import CROP_METADATA
 

@@ -19,13 +19,6 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: Auto-create .env if missing
-if not exist ".env" (
-    if exist ".env.example" (
-        echo [*] Initializing configuration (.env)...
-        copy .env.example .env >nul
-    )
-)
 
 :: Check / Create Virtual Environment
 if not exist "venv\Scripts\activate.bat" (

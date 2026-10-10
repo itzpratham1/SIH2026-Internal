@@ -1,125 +1,109 @@
-# 🌾 SIH-36: Crop Price Intelligence Platform
-> **Smart India Hackathon 2026 — Team NODE VI**  
-> *Target Region: Gwalior Cluster (Wheat, Onion, Tomato)*
+# KrishiBhav — Crop Price Intelligence & Mandi Advisory Platform
 
-An intelligent, ML-powered decision support system designed to help farmers optimize produce marketing timing, mandi routing, and cold storage decisions to maximize net profit.
+**Smart India Hackathon 2026** | **Problem Statement: SIH-36**  
+**Team NODE VI** | **Target Region: Gwalior Cluster, Madhya Pradesh** (*Wheat, Onion, Tomato*)
 
----
-
-## ⚡ 1-Click Quick Start (Easiest Way)
-
-### 📥 Step 1: Download the Project
-- **Option A (Download ZIP):** Click the green **Code** button on GitHub $\rightarrow$ **[Download ZIP]**, then extract the ZIP file.
-- **Option B (Git Clone):**
-  ```bash
-  git clone https://github.com/itzpratham1/SIH2026.git
-  cd SIH2026
-  ```
+KrishiBhav is an offline-first agricultural decision support system designed to help smallholder farmers maximize net profit. By combining real-time mandi prices from Agmarknet, quantile machine learning price forecasting, a 9-factor cascade decision matrix, and road transport logistics, the platform guides farmers on optimal marketing timing, mandi selection, and storage feasibility.
 
 ---
 
-### 🚀 Step 2: Run in One Click
+## Key Capabilities
 
-#### 🖥️ Windows:
-Simply **double-click** [`start.bat`](file:///d:/SIH/start.bat) (or run in CMD/PowerShell):
-```bat
-start.bat
-```
-*(This automatically creates the virtual environment, installs all packages, configures `.env`, starts the server, and opens your browser!)*
-
-#### 🍎 macOS / Linux:
-Open Terminal in the project folder and run:
-```bash
-chmod +x start.sh
-./start.sh
-```
-
-#### 🐳 Docker (Optional):
-```bash
-docker compose up
-```
-
-The web dashboard will automatically open at **`http://localhost:5000`** (or `http://127.0.0.1:5000`).
+- **Live Agmarknet Data Pipeline**: Direct integration with the Open Government Data Portal (data.gov.in) to ingest daily modal prices, arrivals, and min/max ranges for Lashkar (Gwalior), Morena, Bhind, and Shivpuri APMC mandis.
+- **Quantile Price Forecasting (LightGBM)**: Predicts 7-day price bounds across 10th, 50th, and 90th percentiles using causal feature engineering (lagged momentum, rainfall anomalies, and spatial neighbor leads). Validated via rolling-origin walk-forward backtesting (Mean Directional Accuracy).
+- **9-Factor Cascade Risk Engine**: Computes a normalized 0–100 Cascade Score balancing price momentum, arrival pressure, perishable shelf life (ICAR guidelines), cold storage economics, and MSP safety floors to recommend *Sell Now*, *Hold*, or *Store*.
+- **Net Farmer Realization & OSRM Routing**: Calculates real net returns per mandi after deducting round-trip vehicle fuel and labor costs, avoiding misleading gross price comparisons.
+- **Mandi Congestion Safeguard**: Monitors collective routing queries in a sliding time window to prevent herd behavior and local market oversupply.
+- **Offline-First Progressive Web App**: Built with vanilla HTML/CSS/JS and Service Workers for zero-dependency mobile access, featuring bilingual UI (Hindi and English) and audio speech readout.
 
 ---
 
-## 🛠️ Manual Setup (Step-by-Step)
+## System Architecture
 
-If you prefer setting up manually step-by-step:
+```
+SIH/
+├── backend/
+│   ├── app.py                 # Flask REST API endpoints & route handlers
+│   ├── ml_engine.py           # LightGBM quantile regression & backtesting
+│   ├── cascade_engine.py      # 9-factor decision cascade & shelf-life logic
+│   ├── agmarknet_fetcher.py   # data.gov.in Agmarknet API integration & caching
+│   ├── data_service.py        # OSRM road routing, coordinates & weather service
+│   ├── traffic_tracker.py     # Mandi congestion & inflow tracking
+│   ├── historical_data.py     # Mandi price time-series provider
+│   └── config.py              # Application configuration
+├── frontend/
+│   ├── index.html             # Single-page dashboard interface
+│   ├── sw.js                  # Service Worker (offline caching)
+│   ├── manifest.json          # Web App Manifest
+│   └── icon.svg               # App icon
+├── requirements.txt           # Python dependencies
+├── run_server.py              # Local server launcher
+├── test_engine.py             # Validation test suite
+├── Dockerfile                 # Container setup
+└── docker-compose.yml         # Container orchestration
+```
 
-1. **Prerequisites:** Python 3.10+ installed.
-2. **Create & Activate Virtual Environment:**
-   - *Windows:*
+---
+
+## Getting Started
+
+### Prerequisites
+- Python 3.10 or higher
+- `pip` package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/itzpratham1/SIH2026.git
+   cd SIH2026
+   ```
+
+2. **Create and activate a virtual environment**
+   - **Windows:**
      ```powershell
      python -m venv venv
      .\venv\Scripts\activate
      ```
-   - *macOS / Linux:*
+   - **Linux / macOS:**
      ```bash
      python3 -m venv venv
      source venv/bin/activate
      ```
-3. **Install Requirements:**
+
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
-4. **Environment File (Optional):**
-   ```bash
-   copy .env.example .env    # Windows
-   cp .env.example .env      # macOS/Linux
-   ```
-5. **Start Application:**
+
+4. **Run the application**
    ```bash
    python run_server.py
    ```
+   The dashboard will be available at `http://localhost:5000`.
+
+   *Alternatively, on Windows run `start.bat`, on Linux/macOS run `./start.sh`, or with Docker run `docker compose up`.*
 
 ---
 
-## 🧪 Run Tests & Verification
-Run the backend validation suite to verify ML models, routing calculations, and decision cascades:
+## Verification & Testing
+
+To run the verification suite covering the Agmarknet API connection, OSRM routing, LightGBM quantile forecasting, and rolling-origin backtest metrics:
+
 ```bash
 python test_engine.py
 ```
 
 ---
 
-## 📂 Project Structure
-
-```
-SIH/
-├── backend/                  # Flask REST API & ML Decision Engines
-│   ├── app.py                # Server entry point & API route handlers
-│   ├── cascade_engine.py     # Decision cascade (Sell Now vs Hold vs Storage)
-│   ├── ml_engine.py          # LightGBM & Time-Series forecasting models
-│   ├── data_service.py       # Mandi geo-coordinates & routing engine
-│   ├── agmarknet_fetcher.py  # Data.gov.in Agmarknet API integration
-│   ├── traffic_tracker.py    # Mandi congestion & inflow tracking
-│   └── config.py             # App configuration & environment loader
-├── frontend/                 # Progressive Web App (PWA)
-│   ├── index.html            # Core Single Page Application UI
-│   ├── sw.js                 # Service Worker (Offline caching & PWA)
-│   ├── manifest.json         # Web App Manifest
-│   └── icon.svg              # App Icon
-├── start.bat                 # 1-Click launcher for Windows
-├── start.sh                  # 1-Click launcher for macOS / Linux
-├── Dockerfile                # Docker container configuration
-├── docker-compose.yml        # Docker Compose configuration
-├── run_server.py             # Smart Python server launcher & browser opener
-├── test_engine.py            # Automated test & verification suite
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment variables template
-└── README.md                 # Project documentation
-```
-
----
-
-## 🌐 API Overview
+## API Reference
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
-| `/api/meta` | `GET` | Supported mandis, crop parameters, and Agmarknet API status |
-| `/api/calculate-profit` | `POST` | Calculates net profit per mandi considering distance, fuel, and storage |
-| `/api/verdict` | `POST` | Comprehensive ML prediction & marketing timing recommendation |
-| `/api/target-check` | `POST` | Checks probability of hitting farmer's target price |
-| `/api/backtest` | `GET` | Historical accuracy and model performance metrics |
-| `/api/agmarknet-status` | `GET` | Agmarknet live sync health check |
+| `/api/meta` | `GET` | Supported mandis, crop metadata, and Agmarknet connection health |
+| `/api/verdict` | `GET`, `POST` | Machine learning price forecasts and marketing timing recommendations |
+| `/api/calculate-profit` | `POST` | Computes net profit per candidate mandi after transport and labor |
+| `/api/target-check` | `POST` | Probability evaluation of price reaching a target threshold |
+| `/api/backtest` | `GET` | 14-day rolling origin walk-forward performance metrics |
+| `/api/agmarknet-status` | `GET` | Live mandi APMC auction sync status |
+| `/api/reset-traffic` | `POST` | Resets in-memory mandi congestion counters |

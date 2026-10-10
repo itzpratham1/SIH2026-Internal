@@ -46,7 +46,7 @@ try:
     assert 0 <= bt["mda_pct"] <= 100, "MDA must be percentage"
     assert 0 <= bt["calibration_80pct_hit_rate"] <= 100, "Calibration rate must be percentage"
     
-    print("\nALL VERIFICATIONS PASSED SUCCESSFULLY — 100% AUTHENTIC REAL AGMARKNET DATA PIPELINE!")
+    print("\nAll verification checks passed successfully.")
 except Exception as e:
     import traceback
     traceback.print_exc()

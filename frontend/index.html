@@ -6,7 +6,7 @@
 <title>Crop Price Intelligence — SIH 2026</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#234D35">
-<meta name="description" content="Offline-first AI Crop Price Intelligence, Cascade Risk Evaluation, and MSP Safety Net Platform for farmers (SIH-36).">
+<meta name="description" content="Offline-first Crop Price Intelligence, Cascade Risk Evaluation, and MSP Safety Net Platform for farmers (SIH-36).">
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
@@ -265,7 +265,7 @@
             <span class="amt" id="priceNow">—</span>
             <span class="unit" id="priceUnit">/ quintal today</span>
           </div>
-          <button class="voice-btn" onclick="speakVerdict()" title="Voice Readout (Bhashini AI / TTS)">
+          <button class="voice-btn" onclick="speakVerdict()" title="Voice Readout">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
             <span id="lblListen">Listen</span>
           </button>
@@ -1684,7 +1684,7 @@ async function resetSim(){
   await render();
 }
 
-// ---------- Full Speech Audio Engine (TTS / Bhashini AI Ready) ----------
+// ---------- Speech Audio Engine (TTS) ----------
 function getSpokenVerdictText(){
   const cropKey = document.getElementById('cropSelect').value || 'onion';
   const crop = DATA[cropKey] || DATA['onion'];

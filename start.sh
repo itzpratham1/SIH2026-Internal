@@ -23,11 +23,6 @@ echo "             Team NODE VI - Gwalior Cluster Platform"
 echo "====================================================================="
 echo ""
 
-# Auto-create .env if missing
-if [ ! -f ".env" ] && [ -f ".env.example" ]; then
-    echo "[*] Initializing configuration (.env)..."
-    cp .env.example .env
-fi
 
 # Create virtual environment if missing
 if [ ! -d "venv" ]; then

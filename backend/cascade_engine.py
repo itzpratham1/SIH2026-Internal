@@ -1,8 +1,8 @@
 """
 Cascade Risk Score & Decision Engine (SIH-36)
-- Evaluates the full 9-factor model from authentic time-series features
+- Evaluates the 9-factor model from mandi time-series features
 - Calculates the 0-100 Cascade Score
-- Generates 5-second plain-language verdicts
+- Generates plain-language verdicts
 - Enforces Perishability Constraints (ICAR Shelf Life)
 - Implements Mandi Congestion Safeguard (Anti-flooding)
 """

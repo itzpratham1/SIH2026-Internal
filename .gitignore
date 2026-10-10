@@ -1,9 +1,27 @@
+# Environment & Local Configuration
 .env
+*.env
+
+# Cache & Data Artifacts
+*.cache.json
+.agmarknet_cache.json
+
+# Python
 __pycache__/
-*.pyc
-.system_generated/
-scratch/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
 venv/
 .venv/
 env/
 
+# Scratch & IDE
+scratch/
+.system_generated/
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db

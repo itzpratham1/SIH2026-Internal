@@ -2,7 +2,7 @@
 Machine Learning Engine for Crop Price Intelligence (SIH-36)
 - Quantile Regression using LightGBM (10th, 50th, 90th percentiles)
 - Multi-factor tabular feature engineering (Lags, Moving Averages, Weather, Spatial Neighbors, Policy, Import Pressure)
-- Authentic Walk-forward backtesting (Rolling Origin Expanding Window Directional Accuracy / MDA)
+- Walk-forward backtesting (Rolling Origin Expanding Window Directional Accuracy / MDA)
 - Feature attributions / explainability
 """
 
@@ -61,7 +61,7 @@ class CropPriceMLEngine:
         self._initialize_and_train_models()
 
     def _build_feature_matrix(self, crop_key, mandi_key):
-        """Engineers a clean tabular feature matrix from authentic historical series with Spline & Isolation Forest."""
+        """Engineers a tabular feature matrix from historical series with Spline & Isolation Forest."""
         df = load_agmarknet_historical_series(crop_key, mandi_key, days=180)
         
         # 1. Missing Data Gap-Filling: Causal Forward Fill & Backward Fill on cold start (Eliminates Spline Lookahead Leakage)
@@ -94,7 +94,7 @@ class CropPriceMLEngine:
             "detector": "IsolationForest(contamination=0.03, random_state=42)"
         }
 
-        # Load neighbor mandi series for authentic spatial spillover
+        # Load neighbor mandi series for spatial spillover
         neighbor_map = {
             "gwalior": "morena",
             "morena": "gwalior",

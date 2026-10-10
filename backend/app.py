@@ -87,7 +87,7 @@ def reset_traffic():
 @app.route("/api/backtest", methods=["GET"])
 def get_backtest():
     """
-    Dedicated endpoint returning the authentic 14-day rolling origin walk-forward backtest.
+    Returns 14-day rolling origin walk-forward backtest results.
     """
     crop = request.args.get("crop", "onion")
     mandi = request.args.get("mandi", "gwalior")
